@@ -107,8 +107,8 @@ export const theme = createTheme({
 
       styleOverrides: {
         root: {
-          marginBlock: '120px',
           maxWidth: '1200px',
+          justifyContent: 'space-evenly',
         },
       },
     },

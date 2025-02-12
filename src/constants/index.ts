@@ -1,7 +1,12 @@
 import { ColorPartial } from '@mui/material/styles/createPalette';
 import { OpacityColors } from '@types';
 
-export const siteName = 'MaileHereko';
+export const projectName = 'MaileHereko';
+
+export const animeFilterInitialState = {
+  page: 1,
+  input: '',
+};
 
 export const customPrimary: ColorPartial = {
   900: '#120F31',

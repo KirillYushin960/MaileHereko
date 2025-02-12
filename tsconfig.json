@@ -16,7 +16,13 @@
       "@assets/*": ["src/assets/*"],
       "@components/*": ["src/components/*"],
       "@constants": ["src/constants"],
-      "@types": ["src/types"]
+      "@types": ["src/types"],
+      "@graphql/*": ["src/graphql/*"],
+      "@ui/*": ["src/ui/*"],
+      "@store/*": ["src/store/*"],
+      "@pages/*": ["src/pages/*"],
+      "@layout/*": ["src/layout/*"],
+      "@generated/*": ["src/__generated__/*"]
     }
   },
   "include": ["src/**/*"]

@@ -1,15 +1,17 @@
-import { useRef } from 'react';
+import { ChangeEvent, useRef } from 'react';
 import { TextField, Box, SxProps, Theme } from '@mui/material';
 import { style } from './style';
 
 interface Input {
+  value: string;
   label: string;
+  onChange: (event: ChangeEvent<HTMLInputElement>) => void;
   startIcon?: string;
   endIcon?: string;
   sxStyle?: SxProps<Theme>;
 }
 
-export const Input = ({ label, startIcon, endIcon, sxStyle }: Input) => {
+export const Input = ({ value, onChange, label, startIcon, endIcon, sxStyle }: Input) => {
   const inputRef = useRef<HTMLInputElement>(null);
 
   const handleBoxClick = (event: React.MouseEvent) => {
@@ -31,8 +33,10 @@ export const Input = ({ label, startIcon, endIcon, sxStyle }: Input) => {
       {startIcon && <img src={startIcon} draggable="false" alt="start icon" />}
 
       <TextField
-        inputRef={inputRef}
+        value={value}
         label={label}
+        onChange={onChange}
+        inputRef={inputRef}
         variant="filled"
         sx={style.input}
         autoComplete="off"
