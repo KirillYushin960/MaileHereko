@@ -14,10 +14,10 @@ import { TypedDocumentNode as DocumentNode } from '@graphql-typed-document-node/
  * Learn more about it here: https://the-guild.dev/graphql/codegen/plugins/presets/preset-client#reducing-bundle-size
  */
 type Documents = {
-    "\n  query GetAnime($page: Int, $perPage: Int, $type: MediaType, $search: String) {\n    Page(page: $page, perPage: $perPage) {\n      pageInfo {\n        total\n        hasNextPage\n      }\n      media(type: $type, search: $search) {\n        id\n        title {\n          userPreferred\n        }\n        coverImage {\n          large\n        }\n        type\n        meanScore\n      }\n    }\n  }\n": typeof types.GetAnimeDocument,
+    "\n  query GetItems($page: Int, $perPage: Int, $type: MediaType, $search: String) {\n    Page(page: $page, perPage: $perPage) {\n      pageInfo {\n        total\n        hasNextPage\n      }\n      media(type: $type, search: $search) {\n        id\n        title {\n          userPreferred\n        }\n        coverImage {\n          large\n        }\n        type\n        meanScore\n      }\n    }\n  }\n": typeof types.GetItemsDocument,
 };
 const documents: Documents = {
-    "\n  query GetAnime($page: Int, $perPage: Int, $type: MediaType, $search: String) {\n    Page(page: $page, perPage: $perPage) {\n      pageInfo {\n        total\n        hasNextPage\n      }\n      media(type: $type, search: $search) {\n        id\n        title {\n          userPreferred\n        }\n        coverImage {\n          large\n        }\n        type\n        meanScore\n      }\n    }\n  }\n": types.GetAnimeDocument,
+    "\n  query GetItems($page: Int, $perPage: Int, $type: MediaType, $search: String) {\n    Page(page: $page, perPage: $perPage) {\n      pageInfo {\n        total\n        hasNextPage\n      }\n      media(type: $type, search: $search) {\n        id\n        title {\n          userPreferred\n        }\n        coverImage {\n          large\n        }\n        type\n        meanScore\n      }\n    }\n  }\n": types.GetItemsDocument,
 };
 
 /**
@@ -37,7 +37,7 @@ export function gql(source: string): unknown;
 /**
  * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
-export function gql(source: "\n  query GetAnime($page: Int, $perPage: Int, $type: MediaType, $search: String) {\n    Page(page: $page, perPage: $perPage) {\n      pageInfo {\n        total\n        hasNextPage\n      }\n      media(type: $type, search: $search) {\n        id\n        title {\n          userPreferred\n        }\n        coverImage {\n          large\n        }\n        type\n        meanScore\n      }\n    }\n  }\n"): (typeof documents)["\n  query GetAnime($page: Int, $perPage: Int, $type: MediaType, $search: String) {\n    Page(page: $page, perPage: $perPage) {\n      pageInfo {\n        total\n        hasNextPage\n      }\n      media(type: $type, search: $search) {\n        id\n        title {\n          userPreferred\n        }\n        coverImage {\n          large\n        }\n        type\n        meanScore\n      }\n    }\n  }\n"];
+export function gql(source: "\n  query GetItems($page: Int, $perPage: Int, $type: MediaType, $search: String) {\n    Page(page: $page, perPage: $perPage) {\n      pageInfo {\n        total\n        hasNextPage\n      }\n      media(type: $type, search: $search) {\n        id\n        title {\n          userPreferred\n        }\n        coverImage {\n          large\n        }\n        type\n        meanScore\n      }\n    }\n  }\n"): (typeof documents)["\n  query GetItems($page: Int, $perPage: Int, $type: MediaType, $search: String) {\n    Page(page: $page, perPage: $perPage) {\n      pageInfo {\n        total\n        hasNextPage\n      }\n      media(type: $type, search: $search) {\n        id\n        title {\n          userPreferred\n        }\n        coverImage {\n          large\n        }\n        type\n        meanScore\n      }\n    }\n  }\n"];
 
 export function gql(source: string) {
   return (documents as any)[source] ?? {};

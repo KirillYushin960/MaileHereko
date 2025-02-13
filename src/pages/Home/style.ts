@@ -9,6 +9,7 @@ interface StyleProps {
   cardTitle: SxProps<Theme>;
   counter: SxProps<Theme>;
   input: SxProps<Theme>;
+  buttonGroup: SxProps<Theme>;
 }
 
 export const style: StyleProps = {
@@ -44,5 +45,15 @@ export const style: StyleProps = {
     overflow: 'hidden',
     WebkitLineClamp: 2,
     textOverflow: 'ellipsis',
+  },
+
+  buttonGroup: {
+    maxHeight: '40px',
+    px: '32px',
+    py: '8px',
+    borderRadius: '8px',
+    flex: 2,
+    minWidth: 'none',
+    color: theme.palette.customGray[200],
   },
 };

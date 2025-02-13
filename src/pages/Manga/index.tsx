@@ -4,28 +4,25 @@ import { debounce } from 'lodash';
 import { Input } from '@components/Input';
 import { Card } from '@components/Card';
 import { RenderContent } from '@components/RenderContent';
-import { homePageStore } from '@store/HomePageStore';
+import { mangaPageStore } from '@store/MangaPageStore';
 import { useQuery } from '@apollo/client';
 import { GET_ITEMS } from '@graphql/queries';
 import { projectName } from '@constants';
 import { GetItemsQuery } from '@generated/types';
 import { useIntersectionObserver } from '@hooks';
-import { Box, Button as MuiButton, Typography } from '@mui/material';
+import { Typography } from '@mui/material';
 import { style } from './style';
 import Search from '@assets/icons/search-normal.svg';
-import { Button } from '@components/Button';
 
-const Home = () => {
+const Manga = () => {
   const [page, setPage] = useState(1);
-  const [inputValue, setInputValue] = useState(homePageStore.filter.input || '');
+  const [inputValue, setInputValue] = useState(mangaPageStore.filter.input || '');
   const [hasError, setHasError] = useState(false);
 
   const observedCardRef = useRef<HTMLDivElement | null>(null);
 
-  // const type =
-
   const { loading, data, fetchMore } = useQuery<GetItemsQuery>(GET_ITEMS, {
-    variables: { page: 1, perPage: 20, type: 'MANGA', search: homePageStore.filter.input || null },
+    variables: { page: 1, perPage: 20, type: 'MANGA', search: mangaPageStore.filter.input || null },
     notifyOnNetworkStatusChange: true,
     onError: () => {
       setHasError(true);
@@ -41,7 +38,7 @@ const Home = () => {
 
   const debouncedSetStoreInput = useCallback(
     debounce((value: string) => {
-      homePageStore.setInputValue(value);
+      mangaPageStore.setInputValue(value);
     }, 1000),
     []
   );
@@ -81,47 +78,21 @@ const Home = () => {
 
   return (
     <>
-      <Typography variant="h1" sx={style.title}>
+      <Typography variant="bodyExtraSmall" sx={style.subtitle}>
         {projectName}
+      </Typography>
+
+      <Typography variant="h1" sx={style.title}>
+        Manga
       </Typography>
 
       <Input
         value={inputValue}
         onChange={handleInputChange}
-        label="Search Anime of Manga"
+        label="Search Manga"
         startIcon={Search}
         sxStyle={style.input}
       />
-
-      <Box
-        sx={{
-          width: { xs: '240px', sm: '368px' },
-          height: '56px',
-          backgroundColor: '#00000033',
-          p: '8px',
-          display: 'flex',
-          borderRadius: '12px',
-        }}
-      >
-        <Button
-          sxStyle={{
-            maxHeight: '40px',
-            px: '32px',
-            py: '8px',
-            borderRadius: '8px',
-            flex: 1,
-            minWidth: 'none',
-          }}
-        >
-          All
-        </Button>
-        <MuiButton sx={style.buttonGroup}>
-          <Typography variant="linkRegular">Anime</Typography>
-        </MuiButton>
-        <MuiButton sx={style.buttonGroup}>
-          <Typography variant="linkRegular">Manga</Typography>
-        </MuiButton>
-      </Box>
 
       <Typography variant="bodyRegular" sx={style.counter}>
         {data ? itemQuantity : '...'} {itemQuantity === 1 ? 'item' : 'items'}
@@ -146,4 +117,4 @@ const Home = () => {
   );
 };
 
-export default observer(Home);
+export default observer(Manga);

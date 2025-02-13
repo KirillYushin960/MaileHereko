@@ -9,6 +9,6 @@ export type OpacityColors = {
   10: string;
 };
 
-export interface AnimeFilter {
+export interface PageFilter {
   input: string;
 }

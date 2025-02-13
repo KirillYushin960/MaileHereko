@@ -3,8 +3,7 @@ import { OpacityColors } from '@types';
 
 export const projectName = 'MaileHereko';
 
-export const animeFilterInitialState = {
-  page: 1,
+export const filterInitialState = {
   input: '',
 };
 

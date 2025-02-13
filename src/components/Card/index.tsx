@@ -9,15 +9,17 @@ import {
 import { style } from './style';
 import ImagePlaceholder from '@assets/Image-placeholder.png';
 import IconStar from '@assets/icons/star.svg';
+import { RefObject } from 'react';
 
 interface ICard {
-  title: string | null | undefined;
-  rating: number | null | undefined;
-  image: string | null | undefined;
+  ref: RefObject<HTMLDivElement | null> | null;
+  title?: string | null;
+  rating?: number | null;
+  image?: string | null;
 }
 
-export const Card = ({ rating, image, title }: ICard) => (
-  <MuiCard sx={style.card}>
+export const Card = ({ rating, image, title, ref }: ICard) => (
+  <MuiCard sx={style.card} ref={ref}>
     {rating && (
       <Box sx={style.ratingContainer}>
         <img src={IconStar} draggable="false" alt="star" style={{ height: '16px' }} />

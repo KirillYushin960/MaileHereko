@@ -22,7 +22,9 @@
       "@store/*": ["src/store/*"],
       "@pages/*": ["src/pages/*"],
       "@layout/*": ["src/layout/*"],
-      "@generated/*": ["src/__generated__/*"]
+      "@layout": ["src/layout"],
+      "@generated/*": ["src/__generated__/*"],
+      "@hooks": ["src/hooks"]
     }
   },
   "include": ["src/**/*"]

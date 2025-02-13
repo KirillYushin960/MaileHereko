@@ -103,6 +103,7 @@ export const theme = createTheme({
         rowSpacing: 2.5,
         columnSpacing: 3,
         container: true,
+        mb: '64px',
       },
 
       styleOverrides: {

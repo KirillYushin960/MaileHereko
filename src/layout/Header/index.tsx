@@ -25,18 +25,28 @@ export const Header = () => {
 
   const links = (
     <>
-      <Button sx={style.link} component={Link} to="/" onClick={() => handleDrawerToggle(false)}>
+      <Button
+        sx={style.link}
+        component={Link}
+        to="/anime"
+        onClick={() => handleDrawerToggle(false)}
+      >
         <Typography variant="linkRegular">Anime</Typography>
-      </Button>
-
-      <Button sx={style.link} component={Link} to="/" onClick={() => handleDrawerToggle(false)}>
-        <Typography variant="linkRegular">Manga</Typography>
       </Button>
 
       <Button
         sx={style.link}
         component={Link}
-        to="/"
+        to="/manga"
+        onClick={() => handleDrawerToggle(false)}
+      >
+        <Typography variant="linkRegular">Manga</Typography>
+      </Button>
+
+      <Button
+        sx={style.link}
+        // component={Link}
+        // to="/"
         endIcon={<img src={ArrowRight} alt="Arrow Right" draggable="false" />}
         onClick={() => handleDrawerToggle(false)}
       >
@@ -48,7 +58,9 @@ export const Header = () => {
   return (
     <AppBar position="fixed" sx={style.appBar}>
       <Toolbar sx={style.toolbar}>
-        <img src={Logo} alt="Logo" draggable="false" />
+        <IconButton component={Link} to="/" sx={style.logoButton}>
+          <img src={Logo} alt="Logo" draggable="false" />
+        </IconButton>
 
         {isMobile ? (
           <>

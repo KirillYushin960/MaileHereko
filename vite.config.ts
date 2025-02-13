@@ -18,6 +18,7 @@ export default defineConfig({
       '@pages': path.resolve(__dirname, 'src/pages'),
       '@layout': path.resolve(__dirname, 'src/layout'),
       '@generated': path.resolve(__dirname, 'src/__generated__'),
+      '@hooks': path.resolve(__dirname, './src/hooks'),
     },
   },
 });

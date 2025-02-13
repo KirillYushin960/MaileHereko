@@ -1,7 +1,7 @@
 import { gql } from '@apollo/client';
 
-export const GET_ANIME = gql(`
-  query GetAnime($page: Int, $perPage: Int, $type: MediaType, $search: String) {
+export const GET_ITEMS = gql(`
+  query GetItems($page: Int, $perPage: Int, $type: MediaType, $search: String) {
     Page(page: $page, perPage: $perPage) {
       pageInfo {
         total

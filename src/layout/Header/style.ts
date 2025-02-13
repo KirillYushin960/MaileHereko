@@ -8,6 +8,7 @@ interface StyleProps {
   link: SxProps<Theme>;
   menuButton: SxProps<Theme>;
   menu: SxProps<Theme>;
+  logoButton: SxProps<Theme>;
 }
 
 export const style: StyleProps = {
@@ -26,6 +27,8 @@ export const style: StyleProps = {
     height: '80px',
   },
 
+  logoButton: { p: '12px' },
+
   linkContainer: { display: 'flex', gap: '16px' },
 
   link: {
@@ -39,9 +42,10 @@ export const style: StyleProps = {
   },
 
   menu: {
+    display: 'flex',
+    justifyContent: 'center',
     backgroundColor: theme.palette.customGray[900],
     width: '240px',
-    pt: '16px',
     textAlign: 'center',
   },
 };
