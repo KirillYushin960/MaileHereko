@@ -4,28 +4,39 @@ import { debounce } from 'lodash';
 import { Input } from '@components/Input';
 import { Card } from '@components/Card';
 import { RenderContent } from '@components/RenderContent';
-import { homePageStore } from '@store/HomePageStore';
+import { ButtonGroup } from '@components/ButtonGroup';
+import { pageFilterStore } from '@store/PageFilterStore';
 import { useQuery } from '@apollo/client';
-import { GET_ITEMS } from '@graphql/queries';
+import { GET_MEDIA } from '@graphql/queries';
 import { projectName } from '@constants';
-import { GetItemsQuery } from '@generated/types';
+import { GetMediaQuery } from '@generated/types';
 import { useIntersectionObserver } from '@hooks';
-import { Box, Button as MuiButton, Typography } from '@mui/material';
+import { Typography, useMediaQuery } from '@mui/material';
 import { style } from './style';
 import Search from '@assets/icons/search-normal.svg';
-import { Button } from '@components/Button';
+
+// constant
+const perPage = 20;
 
 const Home = () => {
-  const [page, setPage] = useState(1);
-  const [inputValue, setInputValue] = useState(homePageStore.filter.input || '');
+  const [inputValue, setInputValue] = useState(pageFilterStore.homeFilter.inputValue || '');
   const [hasError, setHasError] = useState(false);
+  const [activeType, setActiveType] = useState<'All' | 'Anime' | 'Manga'>('All');
 
   const observedCardRef = useRef<HTMLDivElement | null>(null);
 
-  // const type =
+  const isMobile = useMediaQuery('(max-width:600px)');
 
-  const { loading, data, fetchMore } = useQuery<GetItemsQuery>(GET_ITEMS, {
-    variables: { page: 1, perPage: 20, type: 'MANGA', search: homePageStore.filter.input || null },
+  const variables = {
+    page: 1,
+    perPage,
+    type: activeType === 'All' ? undefined : activeType.toUpperCase(),
+    search: pageFilterStore.homeFilter.inputValue || null,
+  };
+
+  const { loading, data, fetchMore } = useQuery<GetMediaQuery>(GET_MEDIA, {
+    variables,
+    fetchPolicy: 'cache-and-network',
     notifyOnNetworkStatusChange: true,
     onError: () => {
       setHasError(true);
@@ -41,7 +52,7 @@ const Home = () => {
 
   const debouncedSetStoreInput = useCallback(
     debounce((value: string) => {
-      homePageStore.setInputValue(value);
+      pageFilterStore.setInputValue(pageFilterStore.homeFilter, value);
     }, 1000),
     []
   );
@@ -57,7 +68,7 @@ const Home = () => {
     try {
       await fetchMore({
         variables: {
-          page: page + 1,
+          page: (data.Page.media?.length || 0) / perPage + 1,
         },
         updateQuery: (prevResult, { fetchMoreResult }) => {
           if (!fetchMoreResult) return prevResult;
@@ -70,19 +81,42 @@ const Home = () => {
           };
         },
       });
-
-      setPage((prevPage) => prevPage + 1);
     } catch {
       setHasError(true);
     }
-  }, [fetchMore, page, data, loading, hasError]);
+  }, [fetchMore, data, loading, hasError]);
 
   useIntersectionObserver(observedCardRef, handleLoadMore);
 
+  // handleCategoryClick
+  const buttons = [
+    {
+      label: 'All',
+      onClick: () => setActiveType('All'),
+    },
+    {
+      label: 'Anime',
+      onClick: () => setActiveType('Anime'),
+    },
+    {
+      label: 'Manga',
+      onClick: () => setActiveType('Manga'),
+    },
+  ];
+
   return (
     <>
-      <Typography variant="h1" sx={style.title}>
+      <Typography variant={isMobile ? 'h3' : 'h1'} sx={style.title}>
         {projectName}
+      </Typography>
+
+      <Typography variant="bodyRegular" sx={style.description}>
+        List of movies and TV Shows, I,{' '}
+        <Typography variant="bodyRegular" component="span" sx={style.descriptionSpan}>
+          Pramod Poudel
+        </Typography>{' '}
+        have watched till date. Explore what I have watched and also feel free to make a suggestion.
+        😉
       </Typography>
 
       <Input
@@ -93,38 +127,10 @@ const Home = () => {
         sxStyle={style.input}
       />
 
-      <Box
-        sx={{
-          width: { xs: '240px', sm: '368px' },
-          height: '56px',
-          backgroundColor: '#00000033',
-          p: '8px',
-          display: 'flex',
-          borderRadius: '12px',
-        }}
-      >
-        <Button
-          sxStyle={{
-            maxHeight: '40px',
-            px: '32px',
-            py: '8px',
-            borderRadius: '8px',
-            flex: 1,
-            minWidth: 'none',
-          }}
-        >
-          All
-        </Button>
-        <MuiButton sx={style.buttonGroup}>
-          <Typography variant="linkRegular">Anime</Typography>
-        </MuiButton>
-        <MuiButton sx={style.buttonGroup}>
-          <Typography variant="linkRegular">Manga</Typography>
-        </MuiButton>
-      </Box>
+      <ButtonGroup activeButtonValue={activeType} buttons={buttons} sxStyle={style.buttonGroup} />
 
       <Typography variant="bodyRegular" sx={style.counter}>
-        {data ? itemQuantity : '...'} {itemQuantity === 1 ? 'item' : 'items'}
+        {activeType} {!loading && `(${itemQuantity})`}
       </Typography>
 
       <RenderContent loading={loading} error={hasError} count={itemQuantity}>
@@ -134,6 +140,7 @@ const Home = () => {
           return (
             <Card
               key={media?.id}
+              id={media?.id}
               title={media?.title?.userPreferred}
               image={media?.coverImage?.large}
               rating={media?.meanScore}

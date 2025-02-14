@@ -1,6 +1,6 @@
 import { ReactNode } from 'react';
+import { renderPlaceholders } from '@helpers';
 import { Grid2 as Grid, Typography } from '@mui/material';
-import { CardPlaceholderCollection } from '@ui/CardPlaceholderCollection';
 import { style } from './style';
 
 interface IRenderContent {
@@ -11,21 +11,23 @@ interface IRenderContent {
 }
 
 export const RenderContent = ({ loading, error, count, children }: IRenderContent) => (
-  <Grid>
+  <>
     {count === 0 && (
       <Typography variant="h3" sx={style.utilityText}>
         There are no matches
       </Typography>
     )}
 
-    {children}
+    <Grid>
+      {children}
 
-    {loading && <CardPlaceholderCollection />}
+      {loading && renderPlaceholders(4)}
+    </Grid>
 
     {!loading && error && (
       <Typography variant="h3" sx={style.utilityText}>
         Loading error
       </Typography>
     )}
-  </Grid>
+  </>
 );

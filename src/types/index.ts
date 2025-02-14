@@ -10,5 +10,5 @@ export type OpacityColors = {
 };
 
 export interface PageFilter {
-  input: string;
+  inputValue: string;
 }

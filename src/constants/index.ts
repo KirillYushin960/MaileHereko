@@ -4,7 +4,7 @@ import { OpacityColors } from '@types';
 export const projectName = 'MaileHereko';
 
 export const filterInitialState = {
-  input: '',
+  inputValue: '',
 };
 
 export const customPrimary: ColorPartial = {

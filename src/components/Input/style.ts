@@ -15,7 +15,6 @@ export const style: StyleProps = {
     borderRadius: '12px',
     backgroundColor: theme.palette.customBlack[10],
     display: 'flex',
-    justifyContent: 'space-between',
     alignItems: 'center',
     gap: '16px',
     px: '16px',
@@ -48,7 +47,6 @@ export const style: StyleProps = {
       borderBottom: 'none',
     },
     '&& .MuiInputLabel-root': {
-      left: 0,
       color: theme.palette.customGray[600],
       fontFamily: 'Poppins',
       fontSize: '14px',

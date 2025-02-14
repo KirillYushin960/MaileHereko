@@ -4670,7 +4670,7 @@ export type YearStats = {
   year?: Maybe<Scalars['Int']['output']>;
 };
 
-export type GetItemsQueryVariables = Exact<{
+export type GetMediaQueryVariables = Exact<{
   page?: InputMaybe<Scalars['Int']['input']>;
   perPage?: InputMaybe<Scalars['Int']['input']>;
   type?: InputMaybe<MediaType>;
@@ -4678,4 +4678,11 @@ export type GetItemsQueryVariables = Exact<{
 }>;
 
 
-export type GetItemsQuery = { __typename?: 'Query', Page?: { __typename?: 'Page', pageInfo?: { __typename?: 'PageInfo', total?: number | null, hasNextPage?: boolean | null } | null, media?: Array<{ __typename?: 'Media', id: number, type?: MediaType | null, meanScore?: number | null, title?: { __typename?: 'MediaTitle', userPreferred?: string | null } | null, coverImage?: { __typename?: 'MediaCoverImage', large?: string | null } | null } | null> | null } | null };
+export type GetMediaQuery = { __typename?: 'Query', Page?: { __typename?: 'Page', pageInfo?: { __typename?: 'PageInfo', total?: number | null, hasNextPage?: boolean | null } | null, media?: Array<{ __typename?: 'Media', id: number, type?: MediaType | null, meanScore?: number | null, title?: { __typename?: 'MediaTitle', userPreferred?: string | null } | null, coverImage?: { __typename?: 'MediaCoverImage', large?: string | null } | null } | null> | null } | null };
+
+export type GetSingleMediaQueryVariables = Exact<{
+  mediaId?: InputMaybe<Scalars['Int']['input']>;
+}>;
+
+
+export type GetSingleMediaQuery = { __typename?: 'Query', Media?: { __typename?: 'Media', id: number, type?: MediaType | null, status?: MediaStatus | null, duration?: number | null, bannerImage?: string | null, genres?: Array<string | null> | null, meanScore?: number | null, description?: string | null, episodes?: number | null, chapters?: number | null, title?: { __typename?: 'MediaTitle', userPreferred?: string | null } | null, startDate?: { __typename?: 'FuzzyDate', day?: number | null, month?: number | null, year?: number | null } | null, endDate?: { __typename?: 'FuzzyDate', year?: number | null, month?: number | null, day?: number | null } | null, coverImage?: { __typename?: 'MediaCoverImage', extraLarge?: string | null } | null } | null };

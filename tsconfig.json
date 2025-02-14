@@ -24,7 +24,8 @@
       "@layout/*": ["src/layout/*"],
       "@layout": ["src/layout"],
       "@generated/*": ["src/__generated__/*"],
-      "@hooks": ["src/hooks"]
+      "@hooks": ["src/hooks"],
+      "@helpers": ["src/helpers"]
     }
   },
   "include": ["src/**/*"]
