@@ -11,7 +11,7 @@ interface StyleProps {
 }
 
 export const style: StyleProps = {
-  title: { color: theme.palette.customGray[50], mb: '16px' },
+  title: { color: theme.palette.customGray[50], mb: '16px', mt: '80px' },
 
   description: { color: theme.palette.customGray[300], maxWidth: '588px', mb: '24px' },
 

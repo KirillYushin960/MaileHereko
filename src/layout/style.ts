@@ -41,7 +41,6 @@ export const style: StyleProps = {
     flexDirection: 'column',
     maxWidth: '1240px',
     width: '100%',
-    pt: '144px',
-    px: '20px',
+    p: '80px 20px 40px 20px',
   },
 };

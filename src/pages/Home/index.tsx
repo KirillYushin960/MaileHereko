@@ -9,13 +9,13 @@ import { pageFilterStore } from '@store/PageFilterStore';
 import { useQuery } from '@apollo/client';
 import { GET_MEDIA } from '@graphql/queries';
 import { cardPerPage, content, projectName } from '@constants';
+import { generateCategoryButtons, mergePageData } from '@helpers';
+import { Content } from '@types';
 import { GetMediaQuery } from '@generated/types';
 import { useIntersectionObserver } from '@hooks';
 import { Typography, useMediaQuery } from '@mui/material';
 import { style } from './style';
 import Search from '@assets/icons/search-normal.svg';
-import { generateCategoryButtons, mergePageData } from '@helpers';
-import { Content } from '@types';
 
 const Home = () => {
   const [inputValue, setInputValue] = useState(pageFilterStore.homeFilter.inputValue || '');

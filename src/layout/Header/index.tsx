@@ -47,7 +47,7 @@ export const Header = () => {
         sx={style.link}
         // component={Link}
         // to="/"
-        endIcon={<img src={ArrowRight} alt="Arrow Right" draggable="false" />}
+        endIcon={<Box component="img" src={ArrowRight} alt="Arrow Right" draggable="false" />}
         onClick={() => handleDrawerToggle(false)}
       >
         <Typography variant="linkRegular">Suggest me</Typography>
@@ -59,7 +59,7 @@ export const Header = () => {
     <AppBar position="fixed" sx={style.appBar}>
       <Toolbar sx={style.toolbar}>
         <IconButton component={Link} to="/" sx={style.logoButton}>
-          <img src={Logo} alt="Logo" draggable="false" />
+          <Box component="img" src={Logo} alt="Logo" draggable="false" />
         </IconButton>
 
         {isMobile ? (

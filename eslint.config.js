@@ -26,6 +26,7 @@ export default tseslint.config(
       'react-hooks/exhaustive-deps': 'off',
       '@typescript-eslint/explicit-module-boundary-types': 'off',
       '@typescript-eslint/no-unused-vars': 'warn',
+      'no-console': ['error'],
     },
   }
 );

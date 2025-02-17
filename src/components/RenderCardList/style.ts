@@ -6,5 +6,5 @@ interface StyleProps {
 }
 
 export const style: StyleProps = {
-  utilityText: { color: theme.palette.customGray[50], textAlign: 'center', mb: '48px' },
+  utilityText: { color: theme.palette.customGray[50], textAlign: 'center' },
 };

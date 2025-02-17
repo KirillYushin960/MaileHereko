@@ -2,40 +2,17 @@ import { alpha, SxProps, Theme } from '@mui/material';
 import { theme } from '@theme';
 
 interface StyleProps {
-  subtitle: SxProps<Theme>;
-  title: SxProps<Theme>;
   card: SxProps<Theme>;
-  cardTitle: SxProps<Theme>;
-  ratingContainer: SxProps<Theme>;
+  title: SxProps<Theme>;
+  media: SxProps<Theme>;
+  content: SxProps<Theme>;
+  container: SxProps<Theme>;
   rating: SxProps<Theme>;
-  cardMedia: SxProps<Theme>;
-  cardContent: SxProps<Theme>;
-  backgroundOverlay: (image?: string | null | undefined, placeholder?: string) => SxProps<Theme>;
+  backgroundOverlay: (image?: string | null, placeholder?: string) => SxProps<Theme>;
 }
 
 export const style: StyleProps = {
-  subtitle: { color: theme.palette.customPrimary[200] },
-
-  title: { color: theme.palette.customGray[50], mb: '24px' },
-
-  ratingContainer: {
-    height: '40px',
-    backgroundColor: theme.palette.customBlack[65],
-    px: '8px',
-    py: '4px',
-    borderRadius: '8px',
-    display: 'flex',
-    gap: '4px',
-    position: 'absolute',
-    left: 16,
-    top: 18,
-    zIndex: 2,
-    alignItems: 'center',
-    justifyContent: 'center',
-    pointerEvents: 'none',
-  },
-
-  rating: { color: theme.palette.customWarning[500] },
+  container: { textDecoration: 'none' },
 
   card: {
     width: '282px',
@@ -64,11 +41,11 @@ export const style: StyleProps = {
     zIndex: -2,
   }),
 
-  cardMedia: { m: '8px 8px 0px 8px', height: '400px', width: '266px', borderRadius: '8px' },
+  media: { m: '8px 8px 0px 8px', height: '400px', width: '266px', borderRadius: '8px' },
 
-  cardContent: { height: '72px', display: 'flex', alignItems: 'center' },
+  content: { height: '72px', display: 'flex', alignItems: 'center' },
 
-  cardTitle: {
+  title: {
     color: theme.palette.customGray[50],
     display: '-webkit-box',
     WebkitBoxOrient: 'vertical',
@@ -76,4 +53,6 @@ export const style: StyleProps = {
     WebkitLineClamp: 2,
     textOverflow: 'ellipsis',
   },
+
+  rating: { position: 'absolute', left: 16, top: 18 },
 };

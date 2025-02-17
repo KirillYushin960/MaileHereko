@@ -8,13 +8,13 @@ import { debounce } from 'lodash';
 import { useQuery } from '@apollo/client';
 import { GET_MEDIA } from '@graphql/queries';
 import { cardPerPage, projectName } from '@constants';
+import { useIntersectionObserver } from '@hooks';
+import { mergePageData } from '@helpers';
 import { PageFilter } from '@types';
 import { GetMediaQuery } from '@generated/types';
-import { useIntersectionObserver } from '@hooks';
 import { Typography } from '@mui/material';
 import { style } from './style';
 import Search from '@assets/icons/search-normal.svg';
-import { mergePageData } from '@helpers';
 
 interface IMediaPage {
   filter: PageFilter;

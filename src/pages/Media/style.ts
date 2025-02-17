@@ -9,7 +9,7 @@ interface StyleProps {
 }
 
 export const style: StyleProps = {
-  subtitle: { color: theme.palette.customPrimary[200] },
+  subtitle: { color: theme.palette.customPrimary[200], mt: '64px' },
 
   title: { color: theme.palette.customGray[50], mb: '24px' },
 
