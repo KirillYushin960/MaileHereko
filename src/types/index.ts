@@ -1,3 +1,5 @@
+import { content } from '@constants';
+
 export type OpacityColors = {
   100: string;
   75: string;
@@ -12,3 +14,5 @@ export type OpacityColors = {
 export interface PageFilter {
   inputValue: string;
 }
+
+export type Content = (typeof content)[number];

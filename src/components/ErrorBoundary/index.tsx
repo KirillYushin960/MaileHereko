@@ -30,9 +30,7 @@ class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
         <div>
           <h1>Something went wrong.</h1>
           <details>
-            {this.state.errorInfo && (
-              <pre>{this.state.errorInfo.componentStack}</pre>
-            )}
+            {this.state.errorInfo && <pre>{this.state.errorInfo.componentStack}</pre>}
           </details>
         </div>
       );

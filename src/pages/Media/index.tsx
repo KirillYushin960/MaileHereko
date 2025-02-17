@@ -1,21 +1,20 @@
 import { useState, useRef, useCallback, ChangeEvent } from 'react';
 import { Input } from '@components/Input';
 import { Card } from '@components/Card';
-import { RenderContent } from '@components/RenderContent';
+import { RenderCardList } from '@components/RenderCardList';
 import { pageFilterStore } from '@store/PageFilterStore';
 import { observer } from 'mobx-react-lite';
 import { debounce } from 'lodash';
 import { useQuery } from '@apollo/client';
 import { GET_MEDIA } from '@graphql/queries';
-import { projectName } from '@constants';
+import { cardPerPage, projectName } from '@constants';
 import { PageFilter } from '@types';
 import { GetMediaQuery } from '@generated/types';
 import { useIntersectionObserver } from '@hooks';
 import { Typography } from '@mui/material';
 import { style } from './style';
 import Search from '@assets/icons/search-normal.svg';
-
-const perPage = 20;
+import { mergePageData } from '@helpers';
 
 interface IMediaPage {
   filter: PageFilter;
@@ -31,7 +30,7 @@ const Media = ({ filter, pageName }: IMediaPage) => {
   const { loading, data, fetchMore } = useQuery<GetMediaQuery>(GET_MEDIA, {
     variables: {
       page: 1,
-      perPage,
+      perPage: cardPerPage,
       type: pageName.toUpperCase(),
       search: filter.inputValue || null,
     },
@@ -68,23 +67,15 @@ const Media = ({ filter, pageName }: IMediaPage) => {
     try {
       await fetchMore({
         variables: {
-          page: (data.Page.media?.length || 0) / perPage + 1,
+          page: (data.Page.media?.length || 0) / cardPerPage + 1,
         },
-        updateQuery: (prevResult, { fetchMoreResult }) => {
-          if (!fetchMoreResult) return prevResult;
-
-          return {
-            Page: {
-              ...fetchMoreResult.Page,
-              media: [...(prevResult.Page?.media || []), ...(fetchMoreResult.Page?.media || [])],
-            },
-          };
-        },
+        updateQuery: (prevResult, { fetchMoreResult }) =>
+          mergePageData(prevResult, fetchMoreResult),
       });
     } catch {
       setHasError(true);
     }
-  }, [fetchMore, data, loading, hasError, filter]);
+  }, [fetchMore, data, loading, hasError]);
 
   useIntersectionObserver(observedCardRef, handleLoadMore);
 
@@ -110,7 +101,7 @@ const Media = ({ filter, pageName }: IMediaPage) => {
         {!loading ? itemQuantity : '...'} {itemQuantity === 1 ? 'item' : 'items'}
       </Typography>
 
-      <RenderContent loading={loading} error={hasError} count={itemQuantity}>
+      <RenderCardList loading={loading} error={hasError} count={itemQuantity}>
         {data?.Page?.media?.map((media, index) => {
           const isObserved = index === (data.Page?.media?.length || 0) - 5;
 
@@ -125,7 +116,7 @@ const Media = ({ filter, pageName }: IMediaPage) => {
             />
           );
         })}
-      </RenderContent>
+      </RenderCardList>
     </>
   );
 };

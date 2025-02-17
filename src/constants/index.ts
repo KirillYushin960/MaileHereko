@@ -3,6 +3,10 @@ import { OpacityColors } from '@types';
 
 export const projectName = 'MaileHereko';
 
+export const content = ['All', 'Anime', 'Manga'] as const;
+
+export const cardPerPage = 20;
+
 export const filterInitialState = {
   inputValue: '',
 };

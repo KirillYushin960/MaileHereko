@@ -3,25 +3,24 @@ import { observer } from 'mobx-react-lite';
 import { debounce } from 'lodash';
 import { Input } from '@components/Input';
 import { Card } from '@components/Card';
-import { RenderContent } from '@components/RenderContent';
+import { RenderCardList } from '@components/RenderCardList';
 import { ButtonGroup } from '@components/ButtonGroup';
 import { pageFilterStore } from '@store/PageFilterStore';
 import { useQuery } from '@apollo/client';
 import { GET_MEDIA } from '@graphql/queries';
-import { projectName } from '@constants';
+import { cardPerPage, content, projectName } from '@constants';
 import { GetMediaQuery } from '@generated/types';
 import { useIntersectionObserver } from '@hooks';
 import { Typography, useMediaQuery } from '@mui/material';
 import { style } from './style';
 import Search from '@assets/icons/search-normal.svg';
-
-// constant
-const perPage = 20;
+import { generateCategoryButtons, mergePageData } from '@helpers';
+import { Content } from '@types';
 
 const Home = () => {
   const [inputValue, setInputValue] = useState(pageFilterStore.homeFilter.inputValue || '');
   const [hasError, setHasError] = useState(false);
-  const [activeType, setActiveType] = useState<'All' | 'Anime' | 'Manga'>('All');
+  const [activeType, setActiveType] = useState<Content>('All');
 
   const observedCardRef = useRef<HTMLDivElement | null>(null);
 
@@ -29,7 +28,7 @@ const Home = () => {
 
   const variables = {
     page: 1,
-    perPage,
+    perPage: cardPerPage,
     type: activeType === 'All' ? undefined : activeType.toUpperCase(),
     search: pageFilterStore.homeFilter.inputValue || null,
   };
@@ -68,18 +67,10 @@ const Home = () => {
     try {
       await fetchMore({
         variables: {
-          page: (data.Page.media?.length || 0) / perPage + 1,
+          page: (data.Page.media?.length || 0) / cardPerPage + 1,
         },
-        updateQuery: (prevResult, { fetchMoreResult }) => {
-          if (!fetchMoreResult) return prevResult;
-
-          return {
-            Page: {
-              ...fetchMoreResult.Page,
-              media: [...(prevResult.Page?.media || []), ...(fetchMoreResult.Page?.media || [])],
-            },
-          };
-        },
+        updateQuery: (prevResult, { fetchMoreResult }) =>
+          mergePageData(prevResult, fetchMoreResult),
       });
     } catch {
       setHasError(true);
@@ -87,22 +78,6 @@ const Home = () => {
   }, [fetchMore, data, loading, hasError]);
 
   useIntersectionObserver(observedCardRef, handleLoadMore);
-
-  // handleCategoryClick
-  const buttons = [
-    {
-      label: 'All',
-      onClick: () => setActiveType('All'),
-    },
-    {
-      label: 'Anime',
-      onClick: () => setActiveType('Anime'),
-    },
-    {
-      label: 'Manga',
-      onClick: () => setActiveType('Manga'),
-    },
-  ];
 
   return (
     <>
@@ -127,13 +102,17 @@ const Home = () => {
         sxStyle={style.input}
       />
 
-      <ButtonGroup activeButtonValue={activeType} buttons={buttons} sxStyle={style.buttonGroup} />
+      <ButtonGroup
+        activeValue={activeType}
+        buttons={generateCategoryButtons(content, setActiveType)}
+        sxStyle={style.buttonGroup}
+      />
 
       <Typography variant="bodyRegular" sx={style.counter}>
         {activeType} {!loading && `(${itemQuantity})`}
       </Typography>
 
-      <RenderContent loading={loading} error={hasError} count={itemQuantity}>
+      <RenderCardList loading={loading} error={hasError} count={itemQuantity}>
         {data?.Page?.media?.map((media, index) => {
           const isObserved = index === (data.Page?.media?.length || 0) - 5;
 
@@ -148,7 +127,7 @@ const Home = () => {
             />
           );
         })}
-      </RenderContent>
+      </RenderCardList>
     </>
   );
 };
