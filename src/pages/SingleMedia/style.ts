@@ -6,7 +6,6 @@ interface StyleProps {
   title: SxProps<Theme>;
   subtitle: SxProps<Theme>;
   slash: SxProps<Theme>;
-  contentBox: (banner?: string | null) => SxProps<Theme>;
   titleBox: (banner?: string | null) => SxProps<Theme>;
 }
 
@@ -52,16 +51,6 @@ export const style: StyleProps = {
     textDecoration: 'none',
     textTransform: 'capitalize',
   },
-
-  contentBox: (banner) => ({
-    backgroundColor: 'rgba(50, 160, 16, 0.2)',
-    mt: banner ? { xs: '102px', sm: '152px' } : '24px',
-    display: 'flex',
-    flexDirection: { xs: 'column', sm: 'row' },
-    gap: { xs: '40px', sm: '20px', md: '40px', lg: '80px' },
-    mx: { lg: '80px' },
-    flexWrap: 'wrap',
-  }),
 
   slash: {
     color: '#8996A1',

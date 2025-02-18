@@ -20,6 +20,7 @@
     "@graphql-codegen/typescript-operations": "^4.4.1",
     "@graphql-codegen/typescript-react-query": "^6.1.0",
     "@mui/icons-material": "^6.4.3",
+    "@mui/lab": "^6.0.0-beta.27",
     "@mui/material": "^6.4.3",
     "dotenv": "^16.4.7",
     "graphql": "^16.10.0",
