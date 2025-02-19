@@ -5,13 +5,11 @@ import { projectName } from '@constants';
 import { useQuery } from '@apollo/client';
 import { GET_SINGLE_MEDIA } from '@graphql/queries';
 import { GetSingleMediaQuery } from '@generated/types';
-import { Box, Typography, useMediaQuery } from '@mui/material';
+import { Box, Typography } from '@mui/material';
 import { style } from './style';
 
 const SingleMedia = () => {
   const { id: mediaId = '' } = useParams<{ id: string }>();
-
-  const isMobile = useMediaQuery('(max-width:600px)');
 
   const { data, loading, error } = useQuery<GetSingleMediaQuery>(GET_SINGLE_MEDIA, {
     variables: {
@@ -47,9 +45,7 @@ const SingleMedia = () => {
           </Typography>
         </Box>
 
-        <Typography variant={isMobile ? 'h5' : 'h3'} sx={style.title}>
-          {data?.Media?.title?.userPreferred}
-        </Typography>
+        <Typography sx={style.title}>{data?.Media?.title?.userPreferred}</Typography>
       </Box>
 
       <MediaDetails data={data?.Media} />

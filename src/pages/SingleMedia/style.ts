@@ -43,6 +43,10 @@ export const style: StyleProps = {
     WebkitLineClamp: 2,
     textOverflow: 'ellipsis',
     fontFamily: 'Poppins',
+    typography: {
+      xs: 'h5',
+      sm: 'h3',
+    },
   },
 
   subtitle: {

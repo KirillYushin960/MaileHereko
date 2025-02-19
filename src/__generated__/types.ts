@@ -4600,5 +4600,11 @@ export type GetSingleMediaQuery = {
       day?: number | null;
     } | null;
     coverImage?: { __typename?: 'MediaCoverImage'; extraLarge?: string | null } | null;
+    streamingEpisodes?: Array<{
+      __typename?: 'MediaStreamingEpisode';
+      title?: string | null;
+      thumbnail?: string | null;
+      url?: string | null;
+    } | null> | null;
   } | null;
 };

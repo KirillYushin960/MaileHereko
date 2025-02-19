@@ -2,16 +2,17 @@ import { SxProps, Theme } from '@mui/material';
 import { theme } from '@theme';
 
 interface StyleProps {
-  media: SxProps<Theme>;
+  container: SxProps<Theme>;
   image: SxProps<Theme>;
-  info: SxProps<Theme>;
-  infoTitle: SxProps<Theme>;
-  infoDescription: SxProps<Theme>;
+  description: SxProps<Theme>;
   rating: SxProps<Theme>;
+  episodesContainer: SxProps<Theme>;
+  episodesHeader: SxProps<Theme>;
+  episodesList: SxProps<Theme>;
 }
 
 export const style: StyleProps = {
-  media: {
+  container: {
     mt: { xs: '102px', sm: '152px' },
     width: '100%',
     maxWidth: '1120px',
@@ -28,17 +29,7 @@ export const style: StyleProps = {
     maxWidth: '480px',
   },
 
-  info: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: '16px',
-  },
-
-  infoTitle: {
-    color: theme.palette.customGray[50],
-  },
-
-  infoDescription: {
+  description: {
     color: theme.palette.customGray[300],
     whiteSpace: 'pre-line',
     '& a': {
@@ -51,4 +42,19 @@ export const style: StyleProps = {
   },
 
   rating: { height: '32px', width: '60px' },
+
+  episodesContainer: { display: 'flex', flexDirection: 'column', gap: '8px' },
+
+  episodesHeader: {
+    color: theme.palette.customGray[400],
+  },
+
+  episodesList: {
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'space-evenly',
+    height: { xs: '520px', sm: '690px' },
+    borderRadius: { xs: '8px', sm: '12px', md: '24px' },
+    backgroundColor: 'transparent',
+  },
 };

@@ -25,7 +25,8 @@
       "@layout": ["src/layout"],
       "@generated/*": ["src/__generated__/*"],
       "@hooks": ["src/hooks"],
-      "@helpers": ["src/helpers"]
+      "@helpers": ["src/helpers"],
+      "@firebase": ["src/config/firebase.ts"]
     }
   },
   "include": ["src/**/*"]

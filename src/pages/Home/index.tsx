@@ -13,7 +13,7 @@ import { generateCategoryButtons, mergePageData } from '@helpers';
 import { Content } from '@types';
 import { GetMediaQuery } from '@generated/types';
 import { useIntersectionObserver } from '@hooks';
-import { Typography, useMediaQuery } from '@mui/material';
+import { Typography } from '@mui/material';
 import { style } from './style';
 import Search from '@assets/icons/search-normal.svg';
 
@@ -23,8 +23,6 @@ const Home = () => {
   const [activeType, setActiveType] = useState<Content>('All');
 
   const observedCardRef = useRef<HTMLDivElement | null>(null);
-
-  const isMobile = useMediaQuery('(max-width:600px)');
 
   const variables = {
     page: 1,
@@ -81,9 +79,7 @@ const Home = () => {
 
   return (
     <>
-      <Typography variant={isMobile ? 'h3' : 'h1'} sx={style.title}>
-        {projectName}
-      </Typography>
+      <Typography sx={style.title}>{projectName}</Typography>
 
       <Typography variant="bodyRegular" sx={style.description}>
         List of movies and TV Shows, I,{' '}
@@ -117,14 +113,17 @@ const Home = () => {
           const isObserved = index === (data.Page?.media?.length || 0) - 5;
 
           return (
-            <Card
-              key={media?.id}
-              id={media?.id}
-              title={media?.title?.userPreferred}
-              image={media?.coverImage?.large}
-              rating={media?.meanScore}
-              ref={isObserved ? observedCardRef : null}
-            />
+            media?.id &&
+            media?.title?.userPreferred && (
+              <Card
+                key={media.id}
+                id={media.id}
+                title={media.title.userPreferred}
+                image={media.coverImage?.large}
+                rating={media.meanScore}
+                ref={isObserved ? observedCardRef : null}
+              />
+            )
           );
         })}
       </RenderCardList>

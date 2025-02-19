@@ -1,10 +1,10 @@
+import { EpisodeItem } from '@components/EpisodeItem';
 import { Masonry } from '@mui/lab';
-import parse from 'html-react-parser';
 import { GetSingleMediaQuery } from '@generated/types';
-import { handleDateFormat, areDatesEqual, parseMediaStatus } from '@helpers';
+import { handleDateFormat, areDatesEqual, parseMediaStatus, parseDescription } from '@helpers';
 import { MediaInfo } from '@ui/MediaInfo';
 import { Rating } from '@ui/Rating';
-import { Box, Grid2 as Grid, Typography } from '@mui/material';
+import { Box, Grid2 as Grid, ImageList, Typography } from '@mui/material';
 import { style } from './style';
 
 interface IMediaDetails {
@@ -23,31 +23,25 @@ export const MediaDetails = ({ data }: IMediaDetails) => {
     duration,
     genres,
     coverImage,
-    title,
     description,
+    streamingEpisodes,
   } = data || {};
 
-  const datesEqual = areDatesEqual({ startDate, endDate });
+  const datesEqual = startDate && endDate ? areDatesEqual({ startDate, endDate }) : false;
 
   return (
     <>
-      <Box sx={style.media}>
+      <Box sx={style.container}>
         <Masonry columns={{ xs: 1, sm: 2 }} spacing={{ xs: 4, sm: 4, md: 6, lg: 10 }}>
           {coverImage?.extraLarge && (
             <Box component="img" src={coverImage.extraLarge} alt="media image" sx={style.image} />
           )}
 
-          <Box sx={style.info}>
-            <Typography variant="h4" sx={style.infoTitle}>
-              {title?.userPreferred}
+          {description && (
+            <Typography variant="bodyLarge" sx={style.description}>
+              {parseDescription(description)}
             </Typography>
-
-            {description && (
-              <Typography variant="bodyLarge" sx={style.infoDescription}>
-                {parse(description)}
-              </Typography>
-            )}
-          </Box>
+          )}
 
           <Grid rowGap={3} columnGap={3} justifyContent={'flex-start'}>
             {meanScore && (
@@ -68,20 +62,24 @@ export const MediaDetails = ({ data }: IMediaDetails) => {
               />
             )}
 
-            {datesEqual ? (
-              <MediaInfo title="Release" description={handleDateFormat(startDate)} size={12} />
-            ) : (
+            {startDate && (
               <>
-                <MediaInfo
-                  title="First air date"
-                  description={handleDateFormat(startDate)}
-                  size={{ xs: 12, md: 6 }}
-                />
-                <MediaInfo
-                  title="Last air date"
-                  description={handleDateFormat(endDate)}
-                  size={{ xs: 12, md: 6 }}
-                />
+                {endDate && !datesEqual ? (
+                  <>
+                    <MediaInfo
+                      title="First air date"
+                      description={handleDateFormat(startDate)}
+                      size={{ xs: 12, md: 6 }}
+                    />
+                    <MediaInfo
+                      title="Last air date"
+                      description={handleDateFormat(endDate)}
+                      size={{ xs: 12, md: 6 }}
+                    />
+                  </>
+                ) : (
+                  <MediaInfo title="Release" description={handleDateFormat(startDate)} size={12} />
+                )}
               </>
             )}
 
@@ -104,6 +102,20 @@ export const MediaDetails = ({ data }: IMediaDetails) => {
               <MediaInfo title="Genres" description={genres.join(', ')} size={12} />
             )}
           </Grid>
+
+          {streamingEpisodes && streamingEpisodes.length > 0 && (
+            <Box sx={style.episodesContainer}>
+              <Typography variant="bodyRegular" sx={style.episodesHeader}>
+                Watch
+              </Typography>
+
+              <ImageList gap={10} sx={style.episodesList}>
+                {streamingEpisodes.map((episode, i) => (
+                  <EpisodeItem key={i} episode={episode} />
+                ))}
+              </ImageList>
+            </Box>
+          )}
         </Masonry>
       </Box>
     </>

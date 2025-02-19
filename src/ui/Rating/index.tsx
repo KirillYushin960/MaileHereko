@@ -3,7 +3,7 @@ import { style } from './style';
 import IconStar from '@assets/icons/star.svg';
 
 interface IRating {
-  number?: number | null;
+  number: number;
   sxStyle?: SxProps<Theme>;
 }
 

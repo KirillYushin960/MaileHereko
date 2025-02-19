@@ -1,4 +1,5 @@
 import { useState, useRef, useCallback, ChangeEvent } from 'react';
+import { Link } from 'react-router-dom';
 import { Input } from '@components/Input';
 import { Card } from '@components/Card';
 import { RenderCardList } from '@components/RenderCardList';
@@ -81,7 +82,7 @@ const Media = ({ filter, pageName }: IMediaPage) => {
 
   return (
     <>
-      <Typography variant="bodyExtraSmall" sx={style.subtitle}>
+      <Typography variant="bodyExtraSmall" sx={style.subtitle} component={Link} to="/">
         {projectName}
       </Typography>
 
@@ -106,14 +107,17 @@ const Media = ({ filter, pageName }: IMediaPage) => {
           const isObserved = index === (data.Page?.media?.length || 0) - 5;
 
           return (
-            <Card
-              key={media?.id}
-              id={media?.id}
-              title={media?.title?.userPreferred}
-              image={media?.coverImage?.large}
-              rating={media?.meanScore}
-              ref={isObserved ? observedCardRef : null}
-            />
+            media?.id &&
+            media?.title?.userPreferred && (
+              <Card
+                key={media?.id}
+                id={media?.id}
+                title={media?.title?.userPreferred}
+                image={media?.coverImage?.large}
+                rating={media?.meanScore}
+                ref={isObserved ? observedCardRef : null}
+              />
+            )
           );
         })}
       </RenderCardList>

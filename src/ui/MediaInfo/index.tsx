@@ -7,7 +7,7 @@ type Size = {
 
 interface IMediaInfo {
   title: string;
-  description?: string | number | null;
+  description: string | number;
   size: Size | number;
 }
 

@@ -4604,6 +4604,12 @@ export type GetSingleMediaQuery = {
       day?: number | null;
     } | null;
     coverImage?: { __typename?: 'MediaCoverImage'; extraLarge?: string | null } | null;
+    streamingEpisodes?: Array<{
+      __typename?: 'MediaStreamingEpisode';
+      title?: string | null;
+      thumbnail?: string | null;
+      url?: string | null;
+    } | null> | null;
   } | null;
 };
 
@@ -4798,6 +4804,18 @@ export const GetSingleMediaDocument = {
                 { kind: 'Field', name: { kind: 'Name', value: 'description' } },
                 { kind: 'Field', name: { kind: 'Name', value: 'episodes' } },
                 { kind: 'Field', name: { kind: 'Name', value: 'chapters' } },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'streamingEpisodes' },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      { kind: 'Field', name: { kind: 'Name', value: 'title' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'thumbnail' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'url' } },
+                    ],
+                  },
+                },
               ],
             },
           },

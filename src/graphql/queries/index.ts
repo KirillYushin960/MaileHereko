@@ -51,6 +51,11 @@ export const GET_SINGLE_MEDIA = gql(`
       description
       episodes
       chapters
+      streamingEpisodes {
+        title
+        thumbnail
+        url
+      }
     }
   }
 `);

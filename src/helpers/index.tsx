@@ -1,9 +1,10 @@
 import { CardPlaceholder } from '@components/CardPlaceholder';
 import { GetMediaQuery, GetSingleMediaQuery } from '@generated/types';
+import parse from 'html-react-parser';
 
 type PageData = GetMediaQuery['Page'];
 
-type MediaDate = NonNullable<GetSingleMediaQuery['Media']>['startDate'];
+type MediaDate = NonNullable<NonNullable<GetSingleMediaQuery['Media']>['startDate']>;
 
 interface IDatesEqual {
   startDate: MediaDate;
@@ -37,11 +38,9 @@ export const generateCategoryButtons = <T extends string>(
   }));
 
 export const handleDateFormat = (date: MediaDate) => {
-  if (date) {
-    const { day, month, year } = date;
+  const { day, month, year } = date;
 
-    return date.year || month || day ? [year, month, day].filter(Boolean).join('-') : 'unknown';
-  }
+  return date.year || month || day ? [year, month, day].filter(Boolean).join('-') : 'unknown';
 };
 
 export const areDatesEqual = ({ startDate, endDate }: IDatesEqual): boolean =>
@@ -51,3 +50,11 @@ export const areDatesEqual = ({ startDate, endDate }: IDatesEqual): boolean =>
 
 export const parseMediaStatus = (status: string | undefined | null): string =>
   status ? status.toLowerCase().replace(/_/g, ' ') : 'unknown';
+
+export const parseDescription = (description: string) =>
+  parse(
+    description
+      .replace(/<br>\s*<br>/g, '')
+      .replace(/\(Source.*$/s, '')
+      .replace(/<b>\*.*$/s, '')
+  );
