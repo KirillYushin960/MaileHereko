@@ -9,7 +9,7 @@ interface IEpisodeItem {
 
 export const EpisodeItem = ({ episode }: IEpisodeItem) => {
   const content = (
-    <ImageListItem>
+    <ImageListItem sx={style.container}>
       <Box
         component="img"
         src={episode?.thumbnail || ImagePlaceholder}
@@ -22,7 +22,12 @@ export const EpisodeItem = ({ episode }: IEpisodeItem) => {
   );
 
   return episode?.url ? (
-    <Link href={episode.url} target="_blank" rel="noopener noreferrer">
+    <Link
+      href={episode.url}
+      target="_blank"
+      rel="noopener noreferrer"
+      sx={{ textDecoration: 'none' }}
+    >
       {content}
     </Link>
   ) : (

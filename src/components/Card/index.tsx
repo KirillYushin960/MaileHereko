@@ -13,9 +13,9 @@ import ImagePlaceholder from '@assets/Image-placeholder.png';
 import { Rating } from '@ui/Rating';
 
 interface ICard {
-  id: number;
-  ref: RefObject<HTMLDivElement | null> | null;
   title: string;
+  id?: number;
+  ref?: RefObject<HTMLDivElement | null> | null;
   rating?: number | null;
   image?: string | null;
 }

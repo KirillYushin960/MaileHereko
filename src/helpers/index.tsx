@@ -51,10 +51,13 @@ export const areDatesEqual = ({ startDate, endDate }: IDatesEqual): boolean =>
 export const parseMediaStatus = (status: string | undefined | null): string =>
   status ? status.toLowerCase().replace(/_/g, ' ') : 'unknown';
 
-export const parseDescription = (description: string) =>
-  parse(
+export const parseDescription = (description: string): string => {
+  const parsed = parse(
     description
       .replace(/<br>\s*<br>/g, '')
       .replace(/\(Source.*$/s, '')
       .replace(/<b>\*.*$/s, '')
   );
+
+  return typeof parsed === 'string' ? parsed : '';
+};

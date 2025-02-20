@@ -9,24 +9,29 @@ interface StyleProps {
   episodesContainer: SxProps<Theme>;
   episodesHeader: SxProps<Theme>;
   episodesList: SxProps<Theme>;
+  showMore: SxProps<Theme>;
+  ratingContainer: SxProps<Theme>;
+  infoContainer: SxProps<Theme>;
 }
 
 export const style: StyleProps = {
   container: {
     mt: { xs: '102px', sm: '152px' },
     width: '100%',
-    maxWidth: '1120px',
-    ml: 'auto',
-    display: 'flex',
-    justifyContent: { xs: 'center', sm: 'flex-start' },
+    maxWidth: '1040px',
+    mx: 'auto',
   },
 
   image: {
-    width: '100%',
+    width: { xs: '100%', sm: '240px', md: '360px', lg: '480px' },
     objectFit: 'contain',
     objectPosition: 'center',
     borderRadius: '24px',
-    maxWidth: '480px',
+    float: { xs: 'none', sm: 'left' },
+    marginRight: { xs: '0px', sm: '24px', md: '40px', lg: '80px' },
+    marginBottom: { xs: '16px', md: '24px', lg: '40px' },
+    display: { xs: 'flex', sm: 'block' },
+    flexDirection: 'column',
   },
 
   description: {
@@ -41,20 +46,30 @@ export const style: StyleProps = {
     },
   },
 
+  ratingContainer: { width: '100%', my: '24px' },
+
   rating: { height: '32px', width: '60px' },
 
-  episodesContainer: { display: 'flex', flexDirection: 'column', gap: '8px' },
+  showMore: {
+    color: theme.palette.customGray[50],
+    cursor: 'pointer',
+    '&:hover': {
+      color: theme.palette.customGray[100],
+    },
+    ml: '4px',
+  },
+
+  infoContainer: { display: 'flex', flexWrap: 'wrap', gap: '24px', clear: 'none', mb: '24px' },
+
+  episodesContainer: { display: 'flex', flexDirection: 'column', gap: '8px', clear: 'both' },
 
   episodesHeader: {
     color: theme.palette.customGray[400],
   },
 
   episodesList: {
-    display: 'flex',
-    flexDirection: 'column',
-    justifyContent: 'space-evenly',
-    height: { xs: '520px', sm: '690px' },
-    borderRadius: { xs: '8px', sm: '12px', md: '24px' },
-    backgroundColor: 'transparent',
+    display: 'grid',
+    gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
+    gap: '16px',
   },
 };

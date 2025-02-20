@@ -1,17 +1,11 @@
 /* eslint-disable no-console */
 import { makeAutoObservable } from 'mobx';
-import { auth } from 'src/config/firebase';
-import { signInWithPopup, GoogleAuthProvider, signOut } from 'firebase/auth';
-
-interface User {
-  uid: string;
-  displayName: string | null;
-  email: string | null;
-  photoURL: string | null;
-}
+import { auth, googleProvider } from '@config/firebase';
+import { signInWithPopup, signOut, User } from 'firebase/auth';
 
 class UserStore {
   user: User | null = null;
+  isLoading: boolean = true;
 
   constructor() {
     makeAutoObservable(this);
@@ -22,37 +16,41 @@ class UserStore {
       } else {
         this.setUser(null);
       }
+      this.setLoading(false);
     });
   }
 
-  setUser(user: User | null) {
+  setUser = (user: User | null) => {
     this.user = user;
-  }
+  };
 
-  async loginWithGoogle() {
-    const googleProvider = new GoogleAuthProvider();
+  setLoading = (loading: boolean) => {
+    this.isLoading = loading;
+  };
+
+  loginWithGoogle = async () => {
+    this.setLoading(true);
     try {
       const result = await signInWithPopup(auth, googleProvider);
-      const user = result.user;
-      this.setUser({
-        uid: user.uid,
-        displayName: user.displayName,
-        email: user.email,
-        photoURL: user.photoURL,
-      });
+      this.setUser(result.user);
     } catch (error) {
       console.error('Error signing in with Google:', error);
+    } finally {
+      this.setLoading(false);
     }
-  }
+  };
 
-  async logout() {
+  private logout = async () => {
+    this.setLoading(true);
     try {
       await signOut(auth);
       this.setUser(null);
     } catch (error) {
       console.error('Error signing out:', error);
+    } finally {
+      this.setLoading(false);
     }
-  }
+  };
 }
 
 export const userStore = new UserStore();

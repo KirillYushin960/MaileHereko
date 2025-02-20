@@ -20,7 +20,7 @@ export default defineConfig({
       '@generated': path.resolve(__dirname, 'src/__generated__'),
       '@hooks': path.resolve(__dirname, './src/hooks'),
       '@helpers': path.resolve(__dirname, './src/helpers'),
-      '@firebase': path.resolve(__dirname, './src/firebase.ts'),
+      '@config': path.resolve(__dirname, './src/config'),
     },
   },
 });
