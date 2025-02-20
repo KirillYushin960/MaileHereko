@@ -40,7 +40,7 @@ class UserStore {
     }
   };
 
-  private logout = async () => {
+  logout = async () => {
     this.setLoading(true);
     try {
       await signOut(auth);
