@@ -18,7 +18,7 @@ export const style: StyleProps = {
     width: '282px',
     backgroundColor: theme.palette.customGray[800],
     borderRadius: '12px',
-    backdropFilter: 'blur(80px)',
+    backdropFilter: 'blur(20px)',
     height: '480px',
     position: 'relative',
     overflow: 'hidden',
@@ -37,7 +37,7 @@ export const style: StyleProps = {
     )}), url(${image || placeholder})`,
     backgroundSize: 'cover',
     backgroundPosition: 'center',
-    filter: 'blur(80px)',
+    filter: 'blur(20px)',
     zIndex: -2,
   }),
 

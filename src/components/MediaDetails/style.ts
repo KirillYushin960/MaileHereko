@@ -12,6 +12,7 @@ interface StyleProps {
   showMore: SxProps<Theme>;
   ratingContainer: SxProps<Theme>;
   infoContainer: SxProps<Theme>;
+  infoSection: SxProps<Theme>;
 }
 
 export const style: StyleProps = {
@@ -46,7 +47,13 @@ export const style: StyleProps = {
     },
   },
 
-  ratingContainer: { width: '100%', my: '24px' },
+  ratingContainer: {
+    my: '24px',
+    display: 'flex',
+    flexWrap: 'wrap',
+    gap: '24px',
+    clear: 'none',
+  },
 
   rating: { height: '32px', width: '60px' },
 
@@ -60,6 +67,8 @@ export const style: StyleProps = {
   },
 
   infoContainer: { display: 'flex', flexWrap: 'wrap', gap: '24px', clear: 'none', mb: '24px' },
+
+  infoSection: { display: 'flex', gap: '24px', flexWrap: 'wrap' },
 
   episodesContainer: { display: 'flex', flexDirection: 'column', gap: '8px', clear: 'both' },
 

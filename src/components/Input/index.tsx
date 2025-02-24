@@ -8,10 +8,23 @@ interface Input {
   onChange: (event: ChangeEvent<HTMLInputElement>) => void;
   startIcon?: string;
   endIcon?: string;
+  type?: string;
+  error?: boolean;
+  helperText?: string;
   sxStyle?: SxProps<Theme>;
 }
 
-export const Input = ({ value, onChange, label, startIcon, endIcon, sxStyle }: Input) => {
+export const Input = ({
+  value,
+  onChange,
+  label,
+  startIcon,
+  endIcon,
+  type,
+  error,
+  helperText,
+  sxStyle,
+}: Input) => {
   const inputRef = useRef<HTMLInputElement>(null);
 
   const handleBoxClick = (event: React.MouseEvent) => {
@@ -40,6 +53,9 @@ export const Input = ({ value, onChange, label, startIcon, endIcon, sxStyle }: I
         variant="filled"
         sx={style.input}
         autoComplete="off"
+        type={type}
+        error={error}
+        helperText={helperText}
       />
 
       {endIcon && <img src={endIcon} draggable="false" alt="end icon" />}

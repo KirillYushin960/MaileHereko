@@ -1,7 +1,13 @@
 /* eslint-disable no-console */
 import { makeAutoObservable } from 'mobx';
 import { auth, googleProvider } from '@config/firebase';
-import { signInWithPopup, signOut, User } from 'firebase/auth';
+import {
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+  signInWithPopup,
+  signOut,
+  User,
+} from 'firebase/auth';
 
 class UserStore {
   user: User | null = null;
@@ -35,6 +41,7 @@ class UserStore {
       this.setUser(result.user);
     } catch (error) {
       console.error('Error signing in with Google:', error);
+      throw error;
     } finally {
       this.setLoading(false);
     }
@@ -42,11 +49,41 @@ class UserStore {
 
   logout = async () => {
     this.setLoading(true);
+
     try {
       await signOut(auth);
       this.setUser(null);
     } catch (error) {
       console.error('Error signing out:', error);
+      throw error;
+    } finally {
+      this.setLoading(false);
+    }
+  };
+
+  registerWithEmail = async (email: string, password: string) => {
+    this.setLoading(true);
+
+    try {
+      const result = await createUserWithEmailAndPassword(auth, email, password);
+      this.setUser(result.user);
+    } catch (error) {
+      console.error('Error registering with email:', error);
+      throw error;
+    } finally {
+      this.setLoading(false);
+    }
+  };
+
+  loginWithEmail = async (email: string, password: string) => {
+    this.setLoading(true);
+
+    try {
+      const result = await signInWithEmailAndPassword(auth, email, password);
+      this.setUser(result.user);
+    } catch (error) {
+      console.error('Error signing in with email:', error);
+      throw error;
     } finally {
       this.setLoading(false);
     }

@@ -14,7 +14,7 @@ import { Rating } from '@ui/Rating';
 
 interface ICard {
   title: string;
-  id?: number;
+  id?: number | string;
   ref?: RefObject<HTMLDivElement | null> | null;
   rating?: number | null;
   image?: string | null;
@@ -23,7 +23,7 @@ interface ICard {
 export const Card = ({ id, rating, image, title, ref }: ICard) => (
   <Box component={Link} to={`/media/${id}`} sx={style.container}>
     <MuiCard sx={style.card} ref={ref}>
-      {rating && <Rating number={rating} sxStyle={style.rating} />}
+      {rating && rating > 0 && <Rating number={rating} sxStyle={style.rating} />}
 
       <Box sx={style.backgroundOverlay(image, ImagePlaceholder)} />
 

@@ -7,6 +7,8 @@ export const content = ['All', 'Anime', 'Manga'] as const;
 
 export const cardPerPage = 20;
 
+export const charLimit = 300;
+
 export const filterInitialState = {
   inputValue: '',
 };

@@ -1,4 +1,4 @@
-import { Navigate, useParams } from 'react-router-dom';
+import { Navigate } from 'react-router-dom';
 import { observer } from 'mobx-react-lite';
 import { userStore } from '@store/UserStore';
 import { ReactNode } from 'react';
@@ -8,10 +8,7 @@ interface IOwnerRoute {
   children: ReactNode;
 }
 
-// ProtectedRoute
-
-export const OwnerRoute = observer(({ children }: IOwnerRoute) => {
-  const { userId } = useParams();
+export const ProtectedRoute = observer(({ children }: IOwnerRoute) => {
   const { user, isLoading } = userStore;
 
   if (isLoading) {
@@ -24,7 +21,8 @@ export const OwnerRoute = observer(({ children }: IOwnerRoute) => {
     );
   }
 
-  if (user?.uid !== userId) {
+  // если залогинен и переходит на логин, редирект
+  if (!user?.uid) {
     return <Navigate to="/" replace />;
   }
 

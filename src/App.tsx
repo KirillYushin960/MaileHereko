@@ -6,14 +6,16 @@ import { Layout } from '@layout';
 import { ScrollToTop } from '@components/ScrollToTop';
 import { pageFilterStore } from '@store/PageFilterStore';
 import './index.css';
-import { OwnerRoute } from '@components/OwnerRoute';
+import { ProtectedRoute } from '@components/ProtectedRoute';
 import Favorites from '@pages/Favorites';
+import Login from '@pages/Login';
 
 const App = () => (
   <BrowserRouter>
     <ScrollToTop />
     <Routes>
       <Route element={<Layout />}>
+        <Route path="login" element={<Login />} />
         <Route path="/" element={<Home />} />
         <Route
           path="/anime"
@@ -25,11 +27,11 @@ const App = () => (
         />
         <Route path="media/:id" element={<SingleMedia />} />
         <Route
-          path="/favorites/:userId"
+          path="/favorites"
           element={
-            <OwnerRoute>
+            <ProtectedRoute>
               <Favorites />
-            </OwnerRoute>
+            </ProtectedRoute>
           }
         />
       </Route>

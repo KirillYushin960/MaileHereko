@@ -7,6 +7,7 @@ import { GET_SINGLE_MEDIA } from '@graphql/queries';
 import { GetSingleMediaQuery } from '@generated/types';
 import { Box, Typography } from '@mui/material';
 import { style } from './style';
+import { observer } from 'mobx-react-lite';
 
 const SingleMedia = () => {
   const { id: mediaId = '' } = useParams<{ id: string }>();
@@ -53,4 +54,4 @@ const SingleMedia = () => {
   );
 };
 
-export default SingleMedia;
+export default observer(SingleMedia);

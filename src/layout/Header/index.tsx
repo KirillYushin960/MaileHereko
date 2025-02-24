@@ -20,7 +20,7 @@ import UserSquare from '@assets/icons/user-square.svg';
 import { userStore } from '@store/UserStore';
 
 export const Header = observer(() => {
-  const { user, isLoading, loginWithGoogle, logout } = userStore;
+  const { user, logout } = userStore;
   const [drawerOpen, setDrawerOpen] = useState(false);
   const isMobile = useMediaQuery('(max-width:600px)');
 
@@ -48,48 +48,42 @@ export const Header = observer(() => {
         <Typography variant="linkRegular">Manga</Typography>
       </Button>
 
-      {!isLoading && (
+      {!user ? (
+        <Button
+          sx={style.link}
+          endIcon={<Box component="img" src={ArrowRight} alt="sign in icon" draggable="false" />}
+          component={Link}
+          to="/login"
+          onClick={() => handleDrawerToggle(false)}
+        >
+          <Typography variant="linkRegular">Sign in</Typography>
+        </Button>
+      ) : (
         <>
-          {!user ? (
-            <Button
-              sx={style.link}
-              endIcon={
-                <Box component="img" src={ArrowRight} alt="sign in icon" draggable="false" />
-              }
-              onClick={loginWithGoogle}
-              disabled={isLoading}
-            >
-              <Typography variant="linkRegular">Sign in</Typography>
-            </Button>
-          ) : (
-            <>
-              <Button
-                sx={style.link}
-                component={Link}
-                to={`/favorites/${user.uid}`}
-                onClick={() => handleDrawerToggle(false)}
-              >
-                <Typography variant="linkRegular">Favorites</Typography>
-              </Button>
-              <Button
-                sx={style.link}
-                startIcon={<Box component="img" src={Logout} alt="logout icon" draggable="false" />}
-                onClick={logout}
-                disabled={isLoading}
-              >
-                <Typography variant="linkRegular">Logout</Typography>
-              </Button>
+          <Button
+            sx={style.link}
+            component={Link}
+            to={'/favorites'}
+            onClick={() => handleDrawerToggle(false)}
+          >
+            <Typography variant="linkRegular">Favorites</Typography>
+          </Button>
+          <Button
+            sx={style.link}
+            startIcon={<Box component="img" src={Logout} alt="logout icon" draggable="false" />}
+            onClick={logout}
+          >
+            <Typography variant="linkRegular">Logout</Typography>
+          </Button>
 
-              <Box
-                component="img"
-                src={user.photoURL || UserSquare}
-                alt="profile image"
-                draggable="false"
-                sx={{ height: '24px' }}
-              />
-              <Typography variant="bodyLarge">{user.displayName?.split(' ')[0]}</Typography>
-            </>
-          )}
+          <Box
+            component="img"
+            src={user.photoURL || UserSquare}
+            alt="profile image"
+            draggable="false"
+            sx={{ height: '24px' }}
+          />
+          <Typography variant="bodyLarge">{user.displayName?.split(' ')[0]}</Typography>
         </>
       )}
     </>
