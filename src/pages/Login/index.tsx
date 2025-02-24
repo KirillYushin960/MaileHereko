@@ -1,189 +1,207 @@
-/* eslint-disable no-console */
 import { Box, IconButton, Typography } from '@mui/material';
 import { style } from './style';
 import { Input } from '@components/Input';
-import { ChangeEvent, useCallback, useEffect, useState } from 'react';
 import { Button } from '@components/Button';
-import { projectName } from '@constants';
+import { emailRegex, projectName } from '@constants';
 import IconGoogle from '@assets/icons/google.svg';
 import { userStore } from '@store/UserStore';
-import { useNavigate } from 'react-router-dom';
 import { observer } from 'mobx-react-lite';
-import { FirebaseError } from 'firebase/app';
+import { Controller, ControllerRenderProps, SubmitHandler, useForm } from 'react-hook-form';
+import { ChangeEvent, useState, useEffect } from 'react';
+import RevealedPassword from '@assets/icons/eye.svg';
+import HiddenPassword from '@assets/icons/eye-slash.svg';
 
-interface ErrorsState {
-  login?: string;
-  password?: string;
-  general?: string;
+interface LoginForm {
+  email: string;
+  password: string;
+  confirmPassword: string;
+  firstName: string;
+  lastName: string;
 }
 
-const EMAIL_REGEX = /^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/;
-
+// использовать zod
 const Login = () => {
-  const navigate = useNavigate();
+  const {
+    control,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+    setError,
+    clearErrors,
+    reset,
+    watch,
+    // register,
+  } = useForm<LoginForm>({
+    mode: 'onBlur',
+    reValidateMode: 'onSubmit',
+    //zod reducer
+    defaultValues: { email: '', password: '', confirmPassword: '', firstName: '', lastName: '' },
+  });
 
-  const [login, setLogin] = useState('');
-  const [password, setPassword] = useState('');
-  const [isRegistering, setIsRegistering] = useState(false);
-  const [errors, setErrors] = useState<ErrorsState>({});
-  const [isLoading, setIsLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
-  const { registerWithEmail, loginWithEmail, loginWithGoogle, user } = userStore;
+  const { registerWithEmail, loginWithEmail, loginWithGoogle, lastAuthError, clearAuthError } =
+    userStore;
 
   useEffect(() => {
-    if (user) navigate('/');
-  }, [user, navigate]);
+    if (lastAuthError) {
+      setError('root', { message: lastAuthError.message });
+      clearAuthError();
+    }
+  }, [lastAuthError, setError, clearAuthError]);
 
-  const validate = useCallback(() => {
-    const newErrors: ErrorsState = {};
-
-    if (!login.trim()) {
-      newErrors.login = 'Email is required';
-    } else if (!EMAIL_REGEX.test(login)) {
-      newErrors.login = 'Invalid email format';
+  const onSubmit: SubmitHandler<LoginForm> = async ({ email, password, firstName, lastName }) => {
+    if (userStore.isRegistering) {
+      await registerWithEmail(email, password, firstName, lastName);
     }
 
-    if (!password) {
-      newErrors.password = 'Password is required';
-    } else if (password.length < 6) {
-      newErrors.password = 'Password must be at least 6 characters';
-    }
-
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  }, [login, password]);
-
-  const handleIsRegistering = useCallback(() => {
-    setIsRegistering((prev) => !prev);
-    setLogin('');
-    setPassword('');
-    setErrors({});
-  }, []);
-
-  const handleLoginChange = useCallback((event: ChangeEvent<HTMLInputElement>) => {
-    setLogin(event.target.value);
-    setErrors((prev) => ({ ...prev, login: undefined, general: undefined }));
-  }, []);
-
-  const handlePasswordChange = useCallback((event: ChangeEvent<HTMLInputElement>) => {
-    setPassword(event.target.value);
-    setErrors((prev) => ({ ...prev, password: undefined, general: undefined }));
-  }, []);
-
-  const handleAuthError = useCallback((error: FirebaseError) => {
-    let errorMessage = 'An unexpected error occurred';
-
-    switch (error.code) {
-      case 'auth/user-not-found':
-      case 'auth/wrong-password':
-        errorMessage = 'Incorrect email or password';
-        break;
-      case 'auth/email-already-in-use':
-        errorMessage = 'Email already in use';
-        break;
-      case 'auth/weak-password':
-        errorMessage = 'Password should be at least 6 characters';
-        break;
-      case 'auth/too-many-requests':
-        errorMessage = 'Too many attempts, try again later';
-        break;
-      default:
-        console.error('Auth error:', error);
-    }
-
-    setErrors((prev) => ({ ...prev, general: errorMessage }));
-  }, []);
-
-  const handleSubmit = async () => {
-    if (!validate()) return;
-
-    setIsLoading(true);
-
-    try {
-      // попробовать без else
-      if (isRegistering) {
-        await registerWithEmail(login, password);
-      } else {
-        await loginWithEmail(login, password);
-      }
-    } catch (error) {
-      if (error instanceof FirebaseError) {
-        handleAuthError(error);
-      } else {
-        setErrors((prev) => ({ ...prev, general: 'An unexpected error occurred' }));
-      }
-    } finally {
-      setIsLoading(false);
+    if (!userStore.isRegistering) {
+      await loginWithEmail(email, password);
     }
   };
 
-  const handleGoogleLogin = async () => {
-    setIsLoading(true);
-
-    try {
-      await loginWithGoogle();
-    } catch (error) {
-      setErrors((prev) => ({ ...prev, general: 'Google login failed' }));
-      console.error('Google login error:', error);
-    } finally {
-      setIsLoading(false);
-    }
+  const toggleAuthMode = () => {
+    userStore.toggleRegistrationMode();
+    reset();
+    clearErrors('root');
   };
+
+  const handleFieldChange =
+    (field: ControllerRenderProps<LoginForm>) => (e: ChangeEvent<HTMLInputElement>) => {
+      field.onChange(e);
+      clearErrors(field.name);
+      clearErrors('root');
+    };
+
+  const password = watch('password');
 
   return (
     <Box sx={style.container}>
       <Typography variant="h4" sx={style.header}>
-        {isRegistering ? `Sign up to ${projectName}` : `Sign in to ${projectName}`}
+        {userStore.isRegistering ? `Sign up to ${projectName}` : `Sign in to ${projectName}`}
       </Typography>
 
-      {/* вынести в стили*/}
-      <Box sx={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-        <Box>
-          <Input
-            label="Email"
-            value={login}
-            onChange={handleLoginChange}
-            error={!!errors.login}
-            helperText={errors.login}
+      <Box sx={{ display: 'flex', flexDirection: 'column', gap: '40px' }}>
+        {userStore.isRegistering && (
+          <Controller
+            name="firstName"
+            control={control}
+            rules={{ required: 'First name is required' }}
+            render={({ field }) => (
+              <Input
+                {...field}
+                label="First Name"
+                error={!!errors.firstName}
+                helperText={errors.firstName?.message}
+                onChange={handleFieldChange(field)}
+              />
+            )}
           />
-        </Box>
+        )}
 
-        <Box>
-          <Input
-            label="Password"
-            type="password"
-            value={password}
-            onChange={handlePasswordChange}
-            error={!!errors.password}
-            helperText={errors.password}
+        {userStore.isRegistering && (
+          <Controller
+            name="lastName"
+            control={control}
+            rules={{ required: 'Last name is required' }}
+            render={({ field }) => (
+              <Input
+                {...field}
+                label="Last Name"
+                error={!!errors.lastName}
+                helperText={errors.lastName?.message}
+                onChange={handleFieldChange(field)}
+              />
+            )}
           />
-        </Box>
+        )}
+
+        <Controller
+          name="email"
+          control={control}
+          rules={{
+            required: 'Email is required',
+            pattern: { value: emailRegex, message: 'Invalid email format' },
+          }}
+          render={({ field }) => (
+            <Input
+              {...field}
+              label="Email"
+              error={!!errors.email}
+              helperText={errors.email?.message}
+              onChange={handleFieldChange(field)}
+            />
+          )}
+        />
+
+        <Controller
+          name="password"
+          control={control}
+          rules={{
+            required: 'Password is required',
+            minLength: { value: 6, message: 'Password must be at least 6 characters' },
+          }}
+          render={({ field }) => (
+            <Input
+              {...field}
+              label="Password"
+              type={showPassword ? 'text' : 'password'}
+              error={!!errors.password}
+              helperText={errors.password?.message}
+              onChange={handleFieldChange(field)}
+              endIcon={showPassword ? HiddenPassword : RevealedPassword}
+              endIconClick={() => setShowPassword(!showPassword)}
+              endIconStyle={style.inputEndIcon}
+            />
+          )}
+        />
+
+        {userStore.isRegistering && (
+          <Controller
+            name="confirmPassword"
+            control={control}
+            rules={{
+              required: 'Confirm password is required',
+              validate: (value) => value === password || 'Passwords do not match',
+            }}
+            render={({ field }) => (
+              <Input
+                {...field}
+                label="Confirm Password"
+                type={showConfirmPassword ? 'text' : 'password'}
+                error={!!errors.confirmPassword}
+                helperText={errors.confirmPassword?.message}
+                onChange={handleFieldChange(field)}
+                endIcon={showConfirmPassword ? HiddenPassword : RevealedPassword}
+                endIconClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                endIconStyle={style.inputEndIcon}
+              />
+            )}
+          />
+        )}
+
+        {errors.root && (
+          <Typography variant="body2" color="error" sx={style.rootError}>
+            {errors.root.message}
+          </Typography>
+        )}
       </Box>
 
-      {errors.general && (
-        <Typography variant="body2" color="error" sx={{ textAlign: 'center' }}>
-          {errors.general}
-        </Typography>
-      )}
-
-      <Button onClick={handleSubmit} disabled={isLoading}>
-        {isRegistering ? 'Sign up' : 'Sign in'}
+      <Button onClick={handleSubmit(onSubmit)} disabled={isSubmitting}>
+        {userStore.isRegistering ? 'Sign up' : 'Sign in'}
       </Button>
 
-      <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-        <Box sx={{ display: 'flex', flexDirection: 'column' }}>
+      <Box sx={style.authModeContainer}>
+        <Box sx={style.authModeSwitch}>
           <Typography variant="bodyRegular" sx={style.text}>
-            {isRegistering ? 'Already have an account?' : `New to ${projectName}?`}
+            {userStore.isRegistering ? 'Already have an account?' : `New to ${projectName}?`}
           </Typography>
-
-          <Box component="span" onClick={handleIsRegistering} sx={style.pointerBox}>
-            <Typography variant="bodyRegular" sx={style.interactionText}>
-              {isRegistering ? 'Sign in' : `Create an account`}
-            </Typography>
-          </Box>
+          <Typography variant="bodyRegular" sx={style.interactionText} onClick={toggleAuthMode}>
+            {userStore.isRegistering ? 'Sign in' : 'Create an account'}
+          </Typography>
         </Box>
 
-        <IconButton sx={style.logoButton} onClick={handleGoogleLogin} disabled={isLoading}>
+        <IconButton sx={style.logoButton} onClick={loginWithGoogle} disabled={isSubmitting}>
           <Box component="img" src={IconGoogle} alt="Google login" draggable="false" />
         </IconButton>
       </Box>

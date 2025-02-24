@@ -18,7 +18,6 @@ export const style: StyleProps = {
     alignItems: 'center',
     gap: '16px',
     px: '16px',
-    transition: 'border-color 0.3s',
     '&:hover': {
       borderColor: theme.palette.customGray[500],
     },
@@ -30,12 +29,15 @@ export const style: StyleProps = {
   input: {
     marginLeft: '-16px',
     backgroundColor: 'transparent',
+    width: '100%',
     '&& .MuiFilledInput-root': {
       color: theme.palette.customGray[400],
       fontFamily: 'Poppins',
+      position: 'relative',
       fontSize: '16px',
       fontWeight: 400,
       backgroundColor: 'transparent',
+      paddingBottom: '0px',
       '&:before, &:after': {
         borderBottom: 'none',
       },
@@ -45,6 +47,7 @@ export const style: StyleProps = {
     },
     '&& .MuiInputBase-input': {
       borderBottom: 'none',
+      paddingBottom: '0px',
     },
     '&& .MuiInputLabel-root': {
       color: theme.palette.customGray[600],
@@ -52,6 +55,17 @@ export const style: StyleProps = {
       fontSize: '14px',
       fontWeight: 400,
       borderBottom: 'none',
+    },
+    '&& .MuiFormHelperText-root': {
+      minHeight: '20px',
+      position: 'absolute',
+      top: '60px',
+      display: '-webkit-box',
+      WebkitBoxOrient: 'vertical',
+      overflow: 'hidden',
+      WebkitLineClamp: 2,
+      textOverflow: 'ellipsis',
+      m: '0',
     },
   },
 };

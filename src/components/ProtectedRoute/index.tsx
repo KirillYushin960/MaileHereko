@@ -2,28 +2,29 @@ import { Navigate } from 'react-router-dom';
 import { observer } from 'mobx-react-lite';
 import { userStore } from '@store/UserStore';
 import { ReactNode } from 'react';
-import { Typography } from '@mui/material';
+import { Box, CircularProgress } from '@mui/material';
 
-interface IOwnerRoute {
+interface IProtectedRoute {
   children: ReactNode;
+  guestOnly?: boolean;
 }
 
-export const ProtectedRoute = observer(({ children }: IOwnerRoute) => {
+export const ProtectedRoute = observer(({ children, guestOnly = false }: IProtectedRoute) => {
   const { user, isLoading } = userStore;
 
-  if (isLoading) {
+  if (isLoading)
     return (
-      <>
-        <Typography variant="h1" sx={{ color: 'white' }}>
-          LOADING...
-        </Typography>
-      </>
+      <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
+        <CircularProgress />
+      </Box>
     );
+
+  if (user?.uid && guestOnly) {
+    return <Navigate to="/" replace />;
   }
 
-  // если залогинен и переходит на логин, редирект
-  if (!user?.uid) {
-    return <Navigate to="/" replace />;
+  if (!user?.uid && !guestOnly) {
+    return <Navigate to="/login" replace />;
   }
 
   return children;

@@ -20,7 +20,7 @@ import UserSquare from '@assets/icons/user-square.svg';
 import { userStore } from '@store/UserStore';
 
 export const Header = observer(() => {
-  const { user, logout } = userStore;
+  const { user, setSighIn, logout } = userStore;
   const [drawerOpen, setDrawerOpen] = useState(false);
   const isMobile = useMediaQuery('(max-width:600px)');
 
@@ -54,7 +54,10 @@ export const Header = observer(() => {
           endIcon={<Box component="img" src={ArrowRight} alt="sign in icon" draggable="false" />}
           component={Link}
           to="/login"
-          onClick={() => handleDrawerToggle(false)}
+          onClick={() => {
+            handleDrawerToggle(false);
+            setSighIn();
+          }}
         >
           <Typography variant="linkRegular">Sign in</Typography>
         </Button>
@@ -83,7 +86,7 @@ export const Header = observer(() => {
             draggable="false"
             sx={{ height: '24px' }}
           />
-          <Typography variant="bodyLarge">{user.displayName?.split(' ')[0]}</Typography>
+          <Typography variant="bodyLarge">{user.displayName}</Typography>
         </>
       )}
     </>

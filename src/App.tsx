@@ -15,7 +15,6 @@ const App = () => (
     <ScrollToTop />
     <Routes>
       <Route element={<Layout />}>
-        <Route path="login" element={<Login />} />
         <Route path="/" element={<Home />} />
         <Route
           path="/anime"
@@ -24,6 +23,14 @@ const App = () => (
         <Route
           path="/manga"
           element={<Media key={'Manga'} filter={pageFilterStore.mangaFilter} pageName={'Manga'} />}
+        />
+        <Route
+          path="/login"
+          element={
+            <ProtectedRoute guestOnly>
+              <Login />
+            </ProtectedRoute>
+          }
         />
         <Route path="media/:id" element={<SingleMedia />} />
         <Route

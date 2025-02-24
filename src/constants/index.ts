@@ -13,6 +13,9 @@ export const filterInitialState = {
   inputValue: '',
 };
 
+export const emailRegex =
+  /^(?!\.)[^\s@!"#$%&'()*+,/:;<=>?[\\\]^{|}~]+(?:\.[^\s@!"#$%&'()*+,/:;<=>?[\\\]^{|}~]+)*@(?!-)[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*\.[a-zA-Z]{2,}$/;
+
 export const customPrimary: ColorPartial = {
   900: '#120F31',
   800: '#251E62',

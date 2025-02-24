@@ -7,7 +7,10 @@ interface StyleProps {
   logoButton: SxProps<Theme>;
   text: SxProps<Theme>;
   interactionText: SxProps<Theme>;
-  pointerBox: SxProps<Theme>;
+  rootError: SxProps<Theme>;
+  inputEndIcon: SxProps<Theme>;
+  authModeSwitch: SxProps<Theme>;
+  authModeContainer: SxProps<Theme>;
 }
 
 export const style: StyleProps = {
@@ -16,9 +19,11 @@ export const style: StyleProps = {
     border: `1px solid ${theme.palette.customGray[800]}`,
     backgroundColor: theme.palette.customGray[900],
     display: 'flex',
-    m: 'auto',
-    p: { xs: '20px', sm: '80px' },
-    gap: '40px',
+    mx: 'auto',
+    my: '48px',
+    px: { xs: '20px', sm: '80px' },
+    py: { xs: '40px', sm: '80px' },
+    gap: { xs: '60px', sm: '40px' },
     flexDirection: 'column',
     borderRadius: '24px',
   },
@@ -37,8 +42,18 @@ export const style: StyleProps = {
 
   interactionText: {
     color: theme.palette.customWhite[100],
+    alignSelf: 'flex-start',
     '&:hover': { color: theme.palette.customGray[50] },
+    cursor: 'pointer',
   },
 
-  pointerBox: { cursor: 'pointer' },
+  rootError: { textAlign: 'center' },
+
+  inputEndIcon: {
+    cursor: 'pointer',
+  },
+
+  authModeContainer: { display: 'flex', justifyContent: 'space-between' },
+
+  authModeSwitch: { display: 'flex', flexDirection: 'column' },
 };
