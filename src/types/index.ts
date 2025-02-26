@@ -1,4 +1,6 @@
 import { content } from '@constants';
+import { loginSchema, registerSchema } from '@schemas';
+import { z } from 'zod';
 
 export type OpacityColors = {
   100: string;
@@ -16,3 +18,7 @@ export interface PageFilter {
 }
 
 export type Content = (typeof content)[number];
+
+export type RegisterForm = z.infer<typeof registerSchema>;
+
+export type LoginForm = z.infer<typeof loginSchema>;

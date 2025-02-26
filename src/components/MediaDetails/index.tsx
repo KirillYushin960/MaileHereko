@@ -4,15 +4,25 @@ import { GetSingleMediaQuery } from '@generated/types';
 import { handleDateFormat, areDatesEqual, parseMediaStatus, parseDescription } from '@helpers';
 import { MediaInfo } from '@ui/MediaInfo';
 import { Rating } from '@ui/Rating';
-import { Box, Typography } from '@mui/material';
+import { Box, Skeleton, Typography } from '@mui/material';
 import { style } from './style';
 import { useEffect, useState } from 'react';
 import { charLimit } from '@constants';
 import { Button } from '@components/Button';
 import { userStore } from '@store/UserStore';
 import { db } from '@config/firebase';
-import { doc, setDoc, getDoc, updateDoc, arrayUnion, arrayRemove } from 'firebase/firestore';
+import {
+  doc,
+  Timestamp,
+  collection,
+  addDoc,
+  query,
+  where,
+  getDocs,
+  deleteDoc,
+} from 'firebase/firestore';
 import { observer } from 'mobx-react-lite';
+import { Link, useLocation } from 'react-router-dom';
 
 interface IMediaDetails {
   data: GetSingleMediaQuery['Media'];
@@ -36,8 +46,12 @@ export const MediaDetails = observer(({ data }: IMediaDetails) => {
     streamingEpisodes,
   } = data || {};
 
-  const { user } = userStore;
+  const location = useLocation();
+
+  const { user, setLastVisitedPage } = userStore;
   const [isSubscribed, setIsSubscribed] = useState<boolean | null>(null);
+  const [isSubscribing, setIsSubscribing] = useState(false);
+  const [isFetchingFavorite, setIsFetchingFavorite] = useState(false);
 
   const datesEqual = startDate && endDate ? areDatesEqual({ startDate, endDate }) : false;
 
@@ -51,34 +65,25 @@ export const MediaDetails = observer(({ data }: IMediaDetails) => {
     if (!user || !id) return;
 
     try {
-      const favoriteRef = doc(db, 'favorites', id?.toString());
-      const docSnap = await getDoc(favoriteRef);
+      setIsFetchingFavorite(true);
 
-      if (docSnap.exists()) {
-        const data = docSnap.data();
-        if (data.subscribes && Array.isArray(data.subscribes)) {
-          setIsSubscribed(data.subscribes.includes(user.uid));
-        }
+      const favoriteRef = collection(db, 'favorites');
+      const dbQuery = query(
+        favoriteRef,
+        where('userId', '==', user.uid),
+        where('mediaId', '==', id)
+      );
+      const querySnapshot = await getDocs(dbQuery);
+
+      if (!querySnapshot.empty) {
+        setIsSubscribed(true);
       } else {
         setIsSubscribed(false);
       }
     } catch (err) {
       console.error('Error fetchFavorite:', err);
-    }
-  };
-
-  const initFavorite = async () => {
-    if (!user || !id) return;
-
-    try {
-      await setDoc(doc(db, 'favorites', id?.toString()), {
-        title: title?.userPreferred ?? '',
-        image: coverImage?.extraLarge ?? '',
-        rating: meanScore ?? 0,
-        subscribes: [],
-      });
-    } catch (err) {
-      console.error('Error initFavorite:', err);
+    } finally {
+      setIsFetchingFavorite(false);
     }
   };
 
@@ -86,23 +91,34 @@ export const MediaDetails = observer(({ data }: IMediaDetails) => {
     if (!user || !id) return;
 
     try {
-      const favoriteRef = doc(db, 'favorites', id?.toString());
-      const docSnap = await getDoc(favoriteRef);
+      setIsSubscribing(true);
 
-      if (!docSnap.exists()) {
-        await initFavorite();
-        await updateDoc(favoriteRef, {
-          subscribes: arrayUnion(user.uid),
-        });
-        setIsSubscribed(true);
-      } else {
-        await updateDoc(favoriteRef, {
-          subscribes: arrayUnion(user.uid),
-        });
-        setIsSubscribed(true);
+      const favoriteRef = collection(db, 'favorites');
+      const dbQuery = query(
+        favoriteRef,
+        where('userId', '==', user.uid),
+        where('mediaId', '==', id)
+      );
+      const querySnapshot = await getDocs(dbQuery);
+
+      if (!querySnapshot.empty) {
+        return;
       }
+
+      await addDoc(favoriteRef, {
+        title: title?.userPreferred ?? '',
+        image: coverImage?.extraLarge ?? '',
+        rating: meanScore ?? 0,
+        createdAt: Timestamp.now(),
+        userId: user.uid,
+        mediaId: id,
+      });
+
+      setIsSubscribed(true);
     } catch (err) {
       console.error('Error handleAddFavorite:', err);
+    } finally {
+      setIsSubscribing(false);
     }
   };
 
@@ -110,20 +126,38 @@ export const MediaDetails = observer(({ data }: IMediaDetails) => {
     if (!user || !id) return;
 
     try {
-      const favoriteRef = doc(db, 'favorites', id?.toString());
+      setIsSubscribing(true);
 
-      await updateDoc(favoriteRef, {
-        subscribes: arrayRemove(user.uid),
-      });
-      setIsSubscribed(false);
+      const favoriteRef = collection(db, 'favorites');
+      const dbQuery = query(
+        favoriteRef,
+        where('userId', '==', user.uid),
+        where('mediaId', '==', id)
+      );
+      const querySnapshot = await getDocs(dbQuery);
+
+      if (!querySnapshot.empty) {
+        const docId = querySnapshot.docs[0].id;
+        await deleteDoc(doc(db, 'favorites', docId));
+        setIsSubscribed(false);
+      }
     } catch (err) {
       console.error('Error handleRemoveFavorite:', err);
+    } finally {
+      setIsSubscribing(false);
     }
   };
 
   useEffect(() => {
     fetchFavorite();
+
+    if (!user) {
+      setIsSubscribed(null);
+    }
   }, [user, id]);
+
+  const favoriteButtonText =
+    isSubscribed === false || isSubscribed === null ? 'Add to favorites' : 'Remove from favorites';
 
   return (
     <>
@@ -152,24 +186,33 @@ export const MediaDetails = observer(({ data }: IMediaDetails) => {
             </Typography>
           )}
 
-          {meanScore && (
-            <Box sx={style.ratingContainer}>
-              <Rating number={meanScore} sxStyle={style.rating} />
-              {user && isSubscribed !== null && (
-                <Button
-                  sxStyle={{ height: '32px' }}
-                  onClick={
-                    isSubscribed === false
-                      ? () => handleAddFavorite()
-                      : () => handleRemoveFavorite()
-                  }
-                >
-                  {/* favoriteButtonText */}
-                  {isSubscribed === false ? 'Add to favorites' : 'Remove from favorites'}
-                </Button>
-              )}
-            </Box>
-          )}
+          <Box sx={style.ratingContainer}>
+            {meanScore && <Rating number={meanScore} sxStyle={style.rating} />}
+
+            {!user && (
+              <Button
+                onClick={() => setLastVisitedPage(location.pathname)}
+                component={Link}
+                to="/login"
+                sxStyle={style.subscribeButton}
+                disabled={isSubscribing}
+              >
+                {favoriteButtonText}
+              </Button>
+            )}
+
+            {isFetchingFavorite && <Skeleton sx={style.subscribeButtonSkeleton} />}
+
+            {user && isSubscribed !== null && (
+              <Button
+                sxStyle={style.subscribeButton}
+                onClick={isSubscribed === false ? handleAddFavorite : handleRemoveFavorite}
+                disabled={isSubscribing}
+              >
+                {favoriteButtonText}
+              </Button>
+            )}
+          </Box>
         </Box>
 
         <Box sx={style.infoContainer}>

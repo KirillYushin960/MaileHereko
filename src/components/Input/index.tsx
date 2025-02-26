@@ -33,14 +33,13 @@ export const Input = ({
   const isUserInteraction = useRef(false);
 
   const handleContainerMouseDown = (e: MouseEvent<HTMLDivElement>) => {
-    e.preventDefault();
-
     const input = inputRef.current;
     if (!input) return;
 
     const isInputClicked = input.contains(e.target as Node);
 
     if (!isInputClicked) {
+      e.preventDefault();
       isUserInteraction.current = true;
 
       requestAnimationFrame(() => {
@@ -57,7 +56,7 @@ export const Input = ({
       {startIcon && <Box component="img" src={startIcon} draggable="false" alt="start icon" />}
 
       <TextField
-        value={value}
+        value={value ?? ''}
         label={label}
         onChange={onChange}
         variant="filled"

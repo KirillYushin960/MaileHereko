@@ -22,6 +22,10 @@ export const style: StyleProps = {
       borderColor: theme.palette.customPrimary[500],
       backgroundColor: theme.palette.customPrimary[400],
     },
+    '&:disabled': {
+      backgroundColor: theme.palette.customPrimary[600],
+      borderColor: theme.palette.customPrimary[600],
+    },
   },
 
   text: { textTransform: 'capitalize' },

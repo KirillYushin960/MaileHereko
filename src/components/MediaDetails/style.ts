@@ -13,6 +13,8 @@ interface StyleProps {
   ratingContainer: SxProps<Theme>;
   infoContainer: SxProps<Theme>;
   infoSection: SxProps<Theme>;
+  subscribeButton: SxProps<Theme>;
+  subscribeButtonSkeleton: SxProps<Theme>;
 }
 
 export const style: StyleProps = {
@@ -56,6 +58,16 @@ export const style: StyleProps = {
   },
 
   rating: { height: '32px', width: '60px' },
+
+  subscribeButton: { height: '32px' },
+
+  subscribeButtonSkeleton: {
+    width: '240px',
+    height: '32px',
+    borderRadius: '24px',
+    backgroundColor: theme.palette.customGray[800],
+    transform: 'none',
+  },
 
   showMore: {
     color: theme.palette.customGray[50],

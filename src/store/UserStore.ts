@@ -22,10 +22,12 @@ class UserStore {
   user: User | null = null;
   isLoading = true;
   isRegistering = false;
-  lastAuthError: { code: AuthErrorCode; message: string } | null = null;
+  authError: { code: AuthErrorCode; message: string } | null = null;
+  lastVisitedPage = '';
 
   constructor() {
     makeAutoObservable(this);
+
     auth.onAuthStateChanged((user) => {
       this.setUser(user);
       this.isLoading = false;
@@ -34,6 +36,14 @@ class UserStore {
 
   setUser = (user: User | null) => {
     this.user = user;
+  };
+
+  setLastVisitedPage = (page: string) => {
+    this.lastVisitedPage = page;
+  };
+
+  clearLastVisitedPage = () => {
+    this.lastVisitedPage = '';
   };
 
   setSighIn = () => {
@@ -66,11 +76,11 @@ class UserStore {
         console.error('Auth error:', error);
     }
 
-    this.lastAuthError = { code, message };
+    this.authError = { code, message };
   };
 
   clearAuthError = () => {
-    this.lastAuthError = null;
+    this.authError = null;
   };
 
   registerWithEmail = async (
@@ -80,29 +90,23 @@ class UserStore {
     lastName: string
   ) => {
     try {
-      this.isLoading = true;
       const result = await createUserWithEmailAndPassword(auth, email, password);
       const displayName = `${firstName} ${lastName}`;
       await updateProfile(result.user, { displayName });
-      this.setUser({ ...result.user, displayName });
       this.clearAuthError();
+      this.setUser({ ...result.user, displayName });
     } catch (error) {
       this.handleAuthError(error as AuthError);
-    } finally {
-      this.isLoading = false;
     }
   };
 
   loginWithEmail = async (email: string, password: string) => {
     try {
-      this.isLoading = true;
       const result = await signInWithEmailAndPassword(auth, email, password);
-      this.setUser(result.user);
       this.clearAuthError();
+      this.setUser(result.user);
     } catch (error) {
       this.handleAuthError(error as AuthError);
-    } finally {
-      this.isLoading = false;
     }
   };
 
@@ -110,8 +114,8 @@ class UserStore {
     try {
       this.isLoading = true;
       const result = await signInWithPopup(auth, googleProvider);
-      this.setUser(result.user);
       this.clearAuthError();
+      this.setUser(result.user);
     } catch (error) {
       this.handleAuthError(error as AuthError);
     } finally {
@@ -121,13 +125,10 @@ class UserStore {
 
   logout = async () => {
     try {
-      this.isLoading = true;
       await signOut(auth);
       this.setUser(null);
     } catch (error) {
       this.handleAuthError(error as AuthError);
-    } finally {
-      this.isLoading = false;
     }
   };
 }

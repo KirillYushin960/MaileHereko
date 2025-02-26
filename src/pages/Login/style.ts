@@ -11,6 +11,7 @@ interface StyleProps {
   inputEndIcon: SxProps<Theme>;
   authModeSwitch: SxProps<Theme>;
   authModeContainer: SxProps<Theme>;
+  inputContainer: SxProps<Theme>;
 }
 
 export const style: StyleProps = {
@@ -30,6 +31,8 @@ export const style: StyleProps = {
 
   header: { color: theme.palette.customGray[100], width: '100%', textAlign: 'center' },
 
+  inputContainer: { display: 'flex', flexDirection: 'column', gap: '40px', position: 'relative' },
+
   logoButton: {
     height: '48px',
     width: '48px',
@@ -47,7 +50,7 @@ export const style: StyleProps = {
     cursor: 'pointer',
   },
 
-  rootError: { textAlign: 'center' },
+  rootError: { position: 'absolute', bottom: { xs: '-40px', sm: '-30px' } },
 
   inputEndIcon: {
     cursor: 'pointer',

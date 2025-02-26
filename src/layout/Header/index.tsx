@@ -1,6 +1,6 @@
 import { MouseEvent, useState } from 'react';
 import { observer } from 'mobx-react-lite';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import {
   AppBar,
   Avatar,
@@ -27,15 +27,17 @@ import { ProfileInfo } from '@ui/ProfileInfo';
 import { LogoutDialog } from '@components/LogoutDialog';
 
 export const Header = observer(() => {
+  const location = useLocation();
+
   const [isDialogOpen, setDialogOpen] = useState(false);
   const [isDrawerOpen, setDrawerOpen] = useState(false);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const isMenuOpen = Boolean(anchorEl);
 
-  // constant
+  // в хук и в консту стрингу
   const isMobile = useMediaQuery('(max-width:600px)');
 
-  const { user, isLoading, setSighIn } = userStore;
+  const { user, isLoading, setSighIn, setLastVisitedPage } = userStore;
 
   const handleOpenMenu = (event: MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
@@ -95,13 +97,14 @@ export const Header = observer(() => {
         </>
       )}
 
-      {!user && !isLoading && (
+      {!user && !isLoading && location.pathname !== '/login' && (
         <Button
           sx={style.link}
           endIcon={<Box component="img" src={ArrowRight} alt="sign in icon" draggable="false" />}
           component={Link}
           to="/login"
           onClick={() => {
+            setLastVisitedPage(location.pathname);
             handleDrawerClose();
             setSighIn();
           }}

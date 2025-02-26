@@ -26,7 +26,8 @@
       "@generated/*": ["src/__generated__/*"],
       "@hooks": ["src/hooks"],
       "@helpers": ["src/helpers"],
-      "@config/*": ["src/config/*"]
+      "@config/*": ["src/config/*"],
+      "@schemas": ["src/schemas"]
     }
   },
   "include": ["src/**/*"]

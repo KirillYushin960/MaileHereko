@@ -2,48 +2,43 @@
 import { useEffect, useState } from 'react';
 import { Typography, Box, CircularProgress, Grid2 as Grid } from '@mui/material';
 import { db } from '@config/firebase';
-import { collection, getDocs } from 'firebase/firestore';
+import { collection, getDocs, orderBy, query, where } from 'firebase/firestore';
 import { userStore } from '@store/UserStore';
 import { Card } from '@components/Card';
+import NoFavoritesImage from '@assets/no-results.png';
 
-// общий интерфейс
 interface FavoriteItem {
-  id: string;
+  mediaId: string;
   title: string;
   image: string;
   rating: number;
-}
-
-interface FirestoreFavorite {
-  title: string;
-  image: string;
-  rating: number;
-  subscribes: string[];
 }
 
 const Favorites = () => {
   const { user } = userStore;
-  const [favorites, setFavorites] = useState<FavoriteItem[]>([]);
+  const [favorites, setFavorites] = useState<FavoriteItem[] | null>(null);
   const [loading, setLoading] = useState(true);
 
   const fetchFavorites = async () => {
+    if (!user) return;
+
     try {
-      if (!user) return;
-
       setLoading(true);
-      const favoritesRef = collection(db, 'favorites');
-      const querySnapshot = await getDocs(favoritesRef);
 
-      const userFavorites: FavoriteItem[] = querySnapshot.docs
-        .filter((doc) => {
-          const { subscribes } = doc.data() as FirestoreFavorite;
-          return subscribes?.includes(user.uid);
-        })
-        .map((doc) => {
-          const { id } = doc;
-          const { title, image, rating } = doc.data() as FirestoreFavorite;
-          return { id, title, image, rating };
-        });
+      const favoritesRef = collection(db, 'favorites');
+      const dbQuery = query(
+        favoritesRef,
+        where('userId', '==', user.uid),
+        orderBy('createdAt', 'desc')
+      );
+      const querySnapshot = await getDocs(dbQuery);
+
+      const userFavorites: FavoriteItem[] = querySnapshot.docs.map((doc) => ({
+        mediaId: doc.data().mediaId,
+        title: doc.data().title,
+        image: doc.data().image,
+        rating: doc.data().rating,
+      }));
 
       setFavorites(userFavorites);
     } catch (err) {
@@ -54,8 +49,6 @@ const Favorites = () => {
   };
 
   useEffect(() => {
-    if (!user) return;
-
     fetchFavorites();
   }, [user]);
 
@@ -69,20 +62,50 @@ const Favorites = () => {
 
   return (
     <>
-      <Typography variant="h4" sx={{ color: 'white', mb: 3 }}>
+      <Typography
+        sx={{ color: 'white', mt: '80px', mb: '40px', typography: { xs: 'h2', sm: 'h1' } }}
+      >
         Favorites
       </Typography>
 
       {favorites?.length === 0 ? (
-        <Typography variant="body1" sx={{ color: 'white' }}>
-          no favorites
-        </Typography>
+        <Box
+          sx={{
+            display: 'flex',
+            flexDirection: 'column',
+            width: '100%',
+            justifyContent: 'center',
+            alignItems: 'center',
+          }}
+        >
+          <Box
+            component="img"
+            src={NoFavoritesImage}
+            sx={{
+              width: '100%',
+              height: 'auto',
+              maxWidth: '400px',
+              maxHeight: '320px',
+            }}
+          />
+
+          <Typography
+            variant="bodyLarge"
+            sx={{
+              textAlign: 'center',
+              color: 'white',
+              maxWidth: '1000px',
+            }}
+          >
+            You haven't added anything to your favorites yet
+          </Typography>
+        </Box>
       ) : (
         <Grid>
           {favorites?.map((favorite) => (
             <Card
-              key={favorite?.id}
-              id={favorite?.id}
+              key={favorite.mediaId}
+              id={favorite.mediaId}
               title={favorite.title}
               image={favorite.image}
               rating={favorite.rating}
