@@ -1,4 +1,4 @@
-import { ChangeEvent, useRef } from 'react';
+import { ChangeEvent, useRef, MouseEvent } from 'react';
 import { TextField, Box, SxProps, Theme } from '@mui/material';
 import { style } from './style';
 
@@ -29,14 +29,31 @@ export const Input = ({
   endIconStyle,
   sxStyle,
 }: Input) => {
-  const inputRef = useRef<HTMLInputElement | null>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
+  const isUserInteraction = useRef(false);
 
-  const handleBoxClick = () => {
-    inputRef.current?.focus();
+  const handleContainerMouseDown = (e: MouseEvent<HTMLDivElement>) => {
+    e.preventDefault();
+
+    const input = inputRef.current;
+    if (!input) return;
+
+    const isInputClicked = input.contains(e.target as Node);
+
+    if (!isInputClicked) {
+      isUserInteraction.current = true;
+
+      requestAnimationFrame(() => {
+        input.focus();
+        const length = input.value.length;
+        input.setSelectionRange(length, length);
+        isUserInteraction.current = false;
+      });
+    }
   };
 
   return (
-    <Box sx={() => ({ ...style.inputBox, ...sxStyle })} onClick={handleBoxClick}>
+    <Box sx={() => ({ ...style.inputBox, ...sxStyle })} onMouseDown={handleContainerMouseDown}>
       {startIcon && <Box component="img" src={startIcon} draggable="false" alt="start icon" />}
 
       <TextField
@@ -50,12 +67,19 @@ export const Input = ({
         error={error}
         helperText={helperText}
         inputRef={inputRef}
+        onFocus={(e) => {
+          if (!isUserInteraction.current) {
+            const length = e.target.value.length;
+            e.target.setSelectionRange(length, length);
+          }
+        }}
       />
 
       {endIcon && (
         <Box
           component="img"
           onClick={endIconClick}
+          onMouseUp={(e: MouseEvent<HTMLImageElement>) => e.preventDefault()}
           src={endIcon}
           draggable="false"
           alt="end icon"

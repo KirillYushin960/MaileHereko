@@ -48,6 +48,8 @@ export const style: StyleProps = {
     '&& .MuiInputBase-input': {
       borderBottom: 'none',
       paddingBottom: '0px',
+      p: 0,
+      m: '25px 12px 0px',
     },
     '&& .MuiInputLabel-root': {
       color: theme.palette.customGray[600],

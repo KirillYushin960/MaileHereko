@@ -5,7 +5,7 @@ interface StyleProps {
   banner: SxProps<Theme>;
   title: SxProps<Theme>;
   subtitle: SxProps<Theme>;
-  slash: SxProps<Theme>;
+  separator: SxProps<Theme>;
   titleBox: (banner?: string | null) => SxProps<Theme>;
 }
 
@@ -56,9 +56,7 @@ export const style: StyleProps = {
     textTransform: 'capitalize',
   },
 
-  slash: {
-    color: '#8996A1',
-    fontFamily: 'Poppins',
-    mx: '8px',
+  separator: {
+    '& .MuiBreadcrumbs-separator': { color: '#8996A1' },
   },
 };

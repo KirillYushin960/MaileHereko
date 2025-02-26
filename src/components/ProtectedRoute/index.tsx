@@ -3,6 +3,7 @@ import { observer } from 'mobx-react-lite';
 import { userStore } from '@store/UserStore';
 import { ReactNode } from 'react';
 import { Box, CircularProgress } from '@mui/material';
+import { style } from './style';
 
 interface IProtectedRoute {
   children: ReactNode;
@@ -10,11 +11,11 @@ interface IProtectedRoute {
 }
 
 export const ProtectedRoute = observer(({ children, guestOnly = false }: IProtectedRoute) => {
-  const { user, isLoading } = userStore;
+  const { user, isLoading, setSighIn } = userStore;
 
   if (isLoading)
     return (
-      <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
+      <Box sx={style.load}>
         <CircularProgress />
       </Box>
     );
@@ -24,6 +25,7 @@ export const ProtectedRoute = observer(({ children, guestOnly = false }: IProtec
   }
 
   if (!user?.uid && !guestOnly) {
+    setSighIn();
     return <Navigate to="/login" replace />;
   }
 

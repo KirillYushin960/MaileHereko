@@ -8,9 +8,17 @@ interface StyleProps {
 }
 
 export const style: StyleProps = {
-  container: { display: 'flex', flexDirection: 'column', gap: '8px', mb: 0 },
+  container: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '8px',
+    mb: 0,
+  },
 
-  title: { color: theme.palette.customGray[400] },
+  title: {
+    color: theme.palette.customGray[400],
+    display: 'flex',
+  },
 
   description: { color: theme.palette.customGray[100], textTransform: 'capitalize' },
 };

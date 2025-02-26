@@ -5,7 +5,7 @@ import { projectName } from '@constants';
 import { useQuery } from '@apollo/client';
 import { GET_SINGLE_MEDIA } from '@graphql/queries';
 import { GetSingleMediaQuery } from '@generated/types';
-import { Box, Typography } from '@mui/material';
+import { Box, Breadcrumbs, Typography } from '@mui/material';
 import { style } from './style';
 import { observer } from 'mobx-react-lite';
 
@@ -27,13 +27,9 @@ const SingleMedia = () => {
       )}
 
       <Box sx={style.titleBox(banner)}>
-        <Box>
+        <Breadcrumbs aria-label="breadcrumb" sx={style.separator}>
           <Typography variant="bodyExtraSmall" sx={style.subtitle} component={Link} to="/">
             {projectName}
-          </Typography>
-
-          <Typography component="span" sx={style.slash} variant="bodyExtraSmall">
-            /
           </Typography>
 
           <Typography
@@ -44,7 +40,7 @@ const SingleMedia = () => {
           >
             {data?.Media?.type?.toLowerCase()}
           </Typography>
-        </Box>
+        </Breadcrumbs>
 
         <Typography sx={style.title}>{data?.Media?.title?.userPreferred}</Typography>
       </Box>

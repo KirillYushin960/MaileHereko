@@ -1,23 +1,53 @@
+import { z } from 'zod';
 import { Box, IconButton, Typography } from '@mui/material';
 import { style } from './style';
 import { Input } from '@components/Input';
 import { Button } from '@components/Button';
-import { emailRegex, projectName } from '@constants';
+import { projectName } from '@constants';
 import IconGoogle from '@assets/icons/google.svg';
 import { userStore } from '@store/UserStore';
 import { observer } from 'mobx-react-lite';
 import { Controller, ControllerRenderProps, SubmitHandler, useForm } from 'react-hook-form';
 import { ChangeEvent, useState, useEffect } from 'react';
+import { zodResolver } from '@hookform/resolvers/zod';
 import RevealedPassword from '@assets/icons/eye.svg';
 import HiddenPassword from '@assets/icons/eye-slash.svg';
 
-interface LoginForm {
-  email: string;
-  password: string;
-  confirmPassword: string;
-  firstName: string;
-  lastName: string;
-}
+// interface LoginForm {
+//   email: string;
+//   password: string;
+//   confirmPassword: string;
+//   firstName: string;
+//   lastName: string;
+// }
+
+type LoginForm = z.infer<typeof loginSchema>;
+
+const loginSchema = z
+  .object({
+    firstName: z
+      .string()
+      .min(1, 'First name is required')
+      .max(20, 'First name must not exceed 20 characters'),
+    lastName: z
+      .string()
+      .min(1, 'Last name is required')
+      .max(20, 'Last name must not exceed 20 characters'),
+    email: z.string().min(1, 'Email is required').email('Invalid email format'),
+    password: z
+      .string()
+      .min(6, 'Password must be at least 6 characters')
+      .max(20, 'Password must not exceed 20 characters'),
+    confirmPassword: z.string().min(1, 'Confirm password is required'),
+  })
+  .superRefine(({ password, confirmPassword }, ctx) => {
+    if (password !== confirmPassword) {
+      ctx.addIssue({
+        code: 'custom',
+        message: 'Passwords do not match',
+      });
+    }
+  });
 
 // использовать zod
 const Login = () => {
@@ -28,9 +58,11 @@ const Login = () => {
     setError,
     clearErrors,
     reset,
-    watch,
+    // watch,
     // register,
   } = useForm<LoginForm>({
+    resolver: zodResolver(loginSchema),
+
     mode: 'onBlur',
     reValidateMode: 'onSubmit',
     //zod reducer
@@ -64,6 +96,8 @@ const Login = () => {
     userStore.toggleRegistrationMode();
     reset();
     clearErrors('root');
+    setShowPassword(false);
+    setShowConfirmPassword(false);
   };
 
   const handleFieldChange =
@@ -73,7 +107,7 @@ const Login = () => {
       clearErrors('root');
     };
 
-  const password = watch('password');
+  // const password = watch('password');
 
   return (
     <Box sx={style.container}>
@@ -86,7 +120,7 @@ const Login = () => {
           <Controller
             name="firstName"
             control={control}
-            rules={{ required: 'First name is required' }}
+            // rules={{ required: 'First name is required' }}
             render={({ field }) => (
               <Input
                 {...field}
@@ -103,7 +137,7 @@ const Login = () => {
           <Controller
             name="lastName"
             control={control}
-            rules={{ required: 'Last name is required' }}
+            // rules={{ required: 'Last name is required' }}
             render={({ field }) => (
               <Input
                 {...field}
@@ -119,10 +153,10 @@ const Login = () => {
         <Controller
           name="email"
           control={control}
-          rules={{
-            required: 'Email is required',
-            pattern: { value: emailRegex, message: 'Invalid email format' },
-          }}
+          // rules={{
+          //   required: 'Email is required',
+          //   pattern: { value: emailRegex, message: 'Invalid email format' },
+          // }}
           render={({ field }) => (
             <Input
               {...field}
@@ -137,10 +171,10 @@ const Login = () => {
         <Controller
           name="password"
           control={control}
-          rules={{
-            required: 'Password is required',
-            minLength: { value: 6, message: 'Password must be at least 6 characters' },
-          }}
+          // rules={{
+          //   required: 'Password is required',
+          //   minLength: { value: 6, message: 'Password must be at least 6 characters' },
+          // }}
           render={({ field }) => (
             <Input
               {...field}
@@ -160,10 +194,10 @@ const Login = () => {
           <Controller
             name="confirmPassword"
             control={control}
-            rules={{
-              required: 'Confirm password is required',
-              validate: (value) => value === password || 'Passwords do not match',
-            }}
+            // rules={{
+            //   required: 'Confirm password is required',
+            //   validate: (value) => value === password || 'Passwords do not match',
+            // }}
             render={({ field }) => (
               <Input
                 {...field}
