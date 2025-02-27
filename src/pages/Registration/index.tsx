@@ -11,16 +11,16 @@ import { useState, useEffect, KeyboardEvent } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import RevealedPassword from '@assets/icons/eye.svg';
 import HiddenPassword from '@assets/icons/eye-slash.svg';
-import { LoginForm } from '@types';
-import { loginSchema } from '@schemas';
+import { RegisterForm } from '@types';
+import { registerSchema } from '@schemas';
 import { useNavigate } from 'react-router-dom';
 import { FormInput } from '@components/FormInput';
 
-const Login = () => {
+const Registration = () => {
   const navigate = useNavigate();
 
   const {
-    loginWithEmail,
+    registerWithEmail,
     loginWithGoogle,
     authError,
     clearAuthError,
@@ -34,17 +34,21 @@ const Login = () => {
     formState: { errors, isSubmitting },
     setError,
     clearErrors,
-  } = useForm<LoginForm>({
-    resolver: zodResolver(loginSchema),
+  } = useForm<RegisterForm>({
+    resolver: zodResolver(registerSchema),
     mode: 'onBlur',
     reValidateMode: 'onSubmit',
     defaultValues: {
       email: '',
       password: '',
+      firstName: '',
+      lastName: '',
+      confirmPassword: '',
     },
   });
 
   const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   useEffect(() => {
     if (authError) {
@@ -53,9 +57,9 @@ const Login = () => {
     }
   }, [authError, setError, clearAuthError]);
 
-  const onSubmit: SubmitHandler<LoginForm> = async (data) => {
+  const onSubmit: SubmitHandler<RegisterForm> = async (data) => {
     try {
-      await loginWithEmail(data.email, data.password);
+      await registerWithEmail(data.email, data.password, data.firstName, data.lastName);
       navigate(lastVisitedPage || '/');
       clearLastVisitedPage();
     } catch (error) {
@@ -82,10 +86,29 @@ const Login = () => {
   return (
     <Box sx={style.container} onKeyDown={handleKeyDown}>
       <Typography variant="h4" sx={style.header}>
-        Sign in to {projectName}
+        Sign up to {projectName}
       </Typography>
 
       <Box sx={style.inputContainer}>
+        {/* map */}
+        <FormInput
+          control={control}
+          label="First name"
+          name="firstName"
+          error={errors.firstName}
+          helperText={errors.firstName?.message}
+          clearErrors={clearErrors}
+        />
+
+        <FormInput
+          control={control}
+          label="Last name"
+          name="lastName"
+          error={errors.lastName}
+          helperText={errors.lastName?.message}
+          clearErrors={clearErrors}
+        />
+
         <FormInput
           control={control}
           label="Email"
@@ -107,6 +130,18 @@ const Login = () => {
           onEndIconClick={() => setShowPassword((prev) => !prev)}
         />
 
+        <FormInput
+          control={control}
+          name="confirmPassword"
+          label="Confirm password"
+          type={showConfirmPassword ? 'text' : 'password'}
+          error={errors.confirmPassword}
+          clearErrors={clearErrors}
+          helperText={errors.confirmPassword?.message}
+          endIcon={showConfirmPassword ? HiddenPassword : RevealedPassword}
+          onEndIconClick={() => setShowConfirmPassword((prev) => !prev)}
+        />
+
         {errors.root && (
           <Typography variant="body2" color="error" sx={style.rootError}>
             {errors.root.message}
@@ -115,21 +150,20 @@ const Login = () => {
       </Box>
 
       <Button onClick={handleSubmit(onSubmit)} disabled={isSubmitting}>
-        Sign in
+        Sign up
       </Button>
 
       <Box sx={style.authModeContainer}>
         <Box sx={style.authModeSwitch}>
           <Typography variant="bodyRegular" sx={style.text}>
-            New to {projectName}?
+            Already have an account?
           </Typography>
-
           <Typography
             variant="bodyRegular"
             sx={style.interactionText}
-            onClick={() => navigate('/registration')}
+            onClick={() => navigate('/login')}
           >
-            Create an account
+            Sign in
           </Typography>
         </Box>
 
@@ -141,4 +175,4 @@ const Login = () => {
   );
 };
 
-export default observer(Login);
+export default observer(Registration);

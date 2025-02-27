@@ -24,6 +24,9 @@ export const style: StyleProps = {
     '&:focus-within': {
       borderColor: theme.palette.customGray[300],
     },
+    '&.error': {
+      borderColor: theme.palette.error.main,
+    },
   },
 
   input: {

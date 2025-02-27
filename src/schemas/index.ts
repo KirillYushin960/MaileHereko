@@ -13,6 +13,7 @@ export const registerSchema = z
     email: z.string().min(1, 'Email is required').email('Invalid email format'),
     password: z
       .string()
+      .nonempty('Password is required')
       .min(6, 'Password must be at least 6 characters')
       .max(20, 'Password must not exceed 20 characters'),
     confirmPassword: z.string().min(1, 'Confirm password is required'),
@@ -24,5 +25,9 @@ export const registerSchema = z
 
 export const loginSchema = z.object({
   email: z.string().min(1, 'Email is required').email('Invalid email format'),
-  password: z.string().min(1, 'Password is required'),
+  password: z
+    .string()
+    .nonempty('Password is required')
+    .min(6, 'Password must be at least 6 characters')
+    .max(20, 'Password must not exceed 20 characters'),
 });

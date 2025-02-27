@@ -1,179 +1,31 @@
-import { MouseEvent, useState } from 'react';
+import { useState } from 'react';
 import { observer } from 'mobx-react-lite';
-import { Link, useLocation } from 'react-router-dom';
-import {
-  AppBar,
-  Avatar,
-  Box,
-  Button,
-  Divider,
-  Drawer,
-  IconButton,
-  Menu,
-  MenuItem,
-  Toolbar,
-  Tooltip,
-  Typography,
-  useMediaQuery,
-} from '@mui/material';
+import { Link } from 'react-router-dom';
+import { AppBar, Box, IconButton, Toolbar } from '@mui/material';
+import { userStore } from '@store/UserStore';
+import { LogoutDialog } from '@components/LogoutDialog';
+import { useDevice } from '@hooks';
+import { UserMenu } from '@components/UserMenu';
+import { NavLinks } from '@components/NavLinks';
+import { MobileMenu } from '@components/MobileMenu';
 import { style } from './style';
 import MenuIcon from '@mui/icons-material/Menu';
-import ArrowRight from '@assets/icons/arrow-right.svg';
 import Logo from '@assets/logo.svg';
-import Logout from '@assets/icons/logout.svg';
-import UserSquare from '@assets/icons/user-square.svg';
-import { userStore } from '@store/UserStore';
-import { ProfileInfo } from '@ui/ProfileInfo';
-import { LogoutDialog } from '@components/LogoutDialog';
 
 export const Header = observer(() => {
-  const location = useLocation();
-
   const [isDialogOpen, setDialogOpen] = useState(false);
   const [isDrawerOpen, setDrawerOpen] = useState(false);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-  const isMenuOpen = Boolean(anchorEl);
 
-  // в хук и в консту стрингу
-  const isMobile = useMediaQuery('(max-width:600px)');
+  const { isMobile } = useDevice();
 
-  const { user, isLoading, setSighIn, setLastVisitedPage } = userStore;
-
-  const handleOpenMenu = (event: MouseEvent<HTMLElement>) => {
-    setAnchorEl(event.currentTarget);
-  };
-
-  const handleCloseMenu = () => {
-    setAnchorEl(null);
-  };
-
-  const handleDialogOpen = () => {
-    setDialogOpen(true);
-  };
+  const { user } = userStore;
 
   const handleDialogClose = () => {
     setDialogOpen(false);
-    handleDrawerClose();
-  };
-
-  const handleDrawerOpen = () => {
-    setDrawerOpen(true);
-  };
-
-  const handleDrawerClose = () => {
     setDrawerOpen(false);
+    setAnchorEl(null);
   };
-
-  const links = (
-    <>
-      <Button sx={style.link} component={Link} to="/anime" onClick={handleDrawerClose}>
-        <Typography variant="linkRegular">Anime</Typography>
-      </Button>
-
-      <Button sx={style.link} component={Link} to="/manga" onClick={handleDrawerClose}>
-        <Typography variant="linkRegular">Manga</Typography>
-      </Button>
-
-      {user && (
-        <Button sx={style.link} component={Link} to={'/favorites'} onClick={handleDrawerClose}>
-          <Typography variant="linkRegular">Favorites</Typography>
-        </Button>
-      )}
-
-      {user && isMobile && (
-        <>
-          <Button
-            onClick={() => {
-              handleCloseMenu();
-              handleDialogOpen();
-            }}
-          >
-            <Box component="img" src={Logout} alt="logout icon" draggable="false" />
-
-            <Typography variant="linkRegular" sx={style.link}>
-              Logout
-            </Typography>
-          </Button>
-        </>
-      )}
-
-      {!user && !isLoading && location.pathname !== '/login' && (
-        <Button
-          sx={style.link}
-          endIcon={<Box component="img" src={ArrowRight} alt="sign in icon" draggable="false" />}
-          component={Link}
-          to="/login"
-          onClick={() => {
-            setLastVisitedPage(location.pathname);
-            handleDrawerClose();
-            setSighIn();
-          }}
-        >
-          <Typography variant="linkRegular">Sign in</Typography>
-        </Button>
-      )}
-
-      {user && !isMobile && (
-        <>
-          <Tooltip
-            title="Account"
-            slotProps={{
-              popper: {
-                sx: {
-                  ...style.profileTooltip,
-                },
-              },
-            }}
-          >
-            <IconButton
-              onClick={handleOpenMenu}
-              size="small"
-              aria-controls={isMenuOpen ? 'account-menu' : undefined}
-              aria-haspopup="true"
-              aria-expanded={isMenuOpen ? 'true' : undefined}
-            >
-              <Avatar sx={style.avatar} src={user.photoURL || UserSquare} />
-            </IconButton>
-          </Tooltip>
-
-          <Menu
-            anchorEl={anchorEl}
-            id="account-menu"
-            open={isMenuOpen}
-            onClose={handleCloseMenu}
-            disableScrollLock={true}
-            slotProps={{
-              paper: {
-                elevation: 0,
-                sx: {
-                  ...style.profileMenu,
-                },
-              },
-            }}
-            transformOrigin={{ horizontal: 'right', vertical: 'top' }}
-            anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
-          >
-            <ProfileInfo />
-
-            <Divider sx={style.profileMenuDivider} />
-
-            <MenuItem
-              onClick={() => {
-                handleCloseMenu();
-                handleDialogOpen();
-              }}
-            >
-              <Box component="img" src={Logout} alt="logout icon" draggable="false" />
-
-              <Typography variant="bodySmall" sx={style.profileMenuItem}>
-                Logout
-              </Typography>
-            </MenuItem>
-          </Menu>
-        </>
-      )}
-    </>
-  );
 
   return (
     <AppBar position="fixed" sx={style.appBar}>
@@ -187,25 +39,30 @@ export const Header = observer(() => {
             <IconButton
               edge="start"
               aria-label="menu"
-              onClick={handleDrawerOpen}
+              onClick={() => setDrawerOpen(true)}
               sx={style.menuButton}
             >
               <MenuIcon />
             </IconButton>
 
-            <Drawer
-              anchor="right"
+            <MobileMenu
               open={isDrawerOpen}
-              onClose={handleDrawerClose}
-              PaperProps={{ sx: { ...style.menu } }}
-            >
-              <Box sx={style.mobileLinksContainer}>{links}</Box>
-
-              <ProfileInfo />
-            </Drawer>
+              onClose={() => setDrawerOpen(false)}
+              setDialogOpen={setDialogOpen}
+            />
           </>
         ) : (
-          <Box sx={style.linkContainer}>{links}</Box>
+          <Box sx={style.linkContainer}>
+            <NavLinks isMobile={false} onClose={() => setDrawerOpen(false)} />
+
+            {user && (
+              <UserMenu
+                handleDialogOpen={() => setDialogOpen(true)}
+                anchorEl={anchorEl}
+                setAnchorEl={setAnchorEl}
+              />
+            )}
+          </Box>
         )}
       </Toolbar>
 

@@ -52,7 +52,14 @@ export const Input = ({
   };
 
   return (
-    <Box sx={() => ({ ...style.inputBox, ...sxStyle })} onMouseDown={handleContainerMouseDown}>
+    <Box
+      sx={() => ({
+        ...style.inputBox,
+        ...sxStyle,
+      })}
+      className={error ? 'error' : ''}
+      onMouseDown={handleContainerMouseDown}
+    >
       {startIcon && <Box component="img" src={startIcon} draggable="false" alt="start icon" />}
 
       <TextField

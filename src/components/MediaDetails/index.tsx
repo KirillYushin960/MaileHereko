@@ -22,7 +22,7 @@ import {
   deleteDoc,
 } from 'firebase/firestore';
 import { observer } from 'mobx-react-lite';
-import { Link, useLocation } from 'react-router-dom';
+import { AuthDialog } from '@components/AuthDialog';
 
 interface IMediaDetails {
   data: GetSingleMediaQuery['Media'];
@@ -46,12 +46,12 @@ export const MediaDetails = observer(({ data }: IMediaDetails) => {
     streamingEpisodes,
   } = data || {};
 
-  const location = useLocation();
+  const { user } = userStore;
 
-  const { user, setLastVisitedPage } = userStore;
   const [isSubscribed, setIsSubscribed] = useState<boolean | null>(null);
   const [isSubscribing, setIsSubscribing] = useState(false);
   const [isFetchingFavorite, setIsFetchingFavorite] = useState(false);
+  const [isDialogOpen, setDialogOpen] = useState(false);
 
   const datesEqual = startDate && endDate ? areDatesEqual({ startDate, endDate }) : false;
 
@@ -191,9 +191,7 @@ export const MediaDetails = observer(({ data }: IMediaDetails) => {
 
             {!user && (
               <Button
-                onClick={() => setLastVisitedPage(location.pathname)}
-                component={Link}
-                to="/login"
+                onClick={() => setDialogOpen(true)}
                 sxStyle={style.subscribeButton}
                 disabled={isSubscribing}
               >
@@ -269,6 +267,8 @@ export const MediaDetails = observer(({ data }: IMediaDetails) => {
             </Box>
           </Box>
         )}
+
+        <AuthDialog isOpen={isDialogOpen} handleClose={() => setDialogOpen(false)} />
       </Box>
     </>
   );

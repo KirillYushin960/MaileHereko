@@ -1,14 +1,15 @@
-import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import Home from '@pages/Home';
+import Login from '@pages/Login';
 import Media from '@pages/Media';
+import Favorites from '@pages/Favorites';
 import SingleMedia from '@pages/SingleMedia';
+import Registration from '@pages/Registration';
+import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import { Layout } from '@layout';
 import { ScrollToTop } from '@components/ScrollToTop';
+import { ProtectedRoute } from '@components/ProtectedRoute';
 import { pageFilterStore } from '@store/PageFilterStore';
 import './index.css';
-import { ProtectedRoute } from '@components/ProtectedRoute';
-import Favorites from '@pages/Favorites';
-import Login from '@pages/Login';
 
 const App = () => (
   <BrowserRouter>
@@ -29,6 +30,14 @@ const App = () => (
           element={
             <ProtectedRoute guestOnly>
               <Login />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/registration"
+          element={
+            <ProtectedRoute guestOnly>
+              <Registration />
             </ProtectedRoute>
           }
         />

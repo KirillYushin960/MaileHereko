@@ -1,6 +1,7 @@
 import { content } from '@constants';
 import { loginSchema, registerSchema } from '@schemas';
 import { z } from 'zod';
+import { FieldError } from 'react-hook-form';
 
 export type OpacityColors = {
   100: string;
@@ -22,3 +23,13 @@ export type Content = (typeof content)[number];
 export type RegisterForm = z.infer<typeof registerSchema>;
 
 export type LoginForm = z.infer<typeof loginSchema>;
+
+export type MenuItem = {
+  path: string;
+  label: string;
+  requiresAuth?: boolean;
+};
+
+export type FormErrors<T> = {
+  [K in keyof T]?: FieldError;
+} & { root?: { message: string } };

@@ -21,7 +21,6 @@ type AuthErrorCode =
 class UserStore {
   user: User | null = null;
   isLoading = true;
-  isRegistering = false;
   authError: { code: AuthErrorCode; message: string } | null = null;
   lastVisitedPage = '';
 
@@ -44,15 +43,6 @@ class UserStore {
 
   clearLastVisitedPage = () => {
     this.lastVisitedPage = '';
-  };
-
-  setSighIn = () => {
-    this.isRegistering = false;
-  };
-
-  toggleRegistrationMode = () => {
-    this.isRegistering = !this.isRegistering;
-    this.clearAuthError();
   };
 
   private handleAuthError = (error: AuthError) => {
@@ -97,6 +87,7 @@ class UserStore {
       this.setUser({ ...result.user, displayName });
     } catch (error) {
       this.handleAuthError(error as AuthError);
+      throw error;
     }
   };
 
@@ -107,6 +98,7 @@ class UserStore {
       this.setUser(result.user);
     } catch (error) {
       this.handleAuthError(error as AuthError);
+      throw error;
     }
   };
 
@@ -118,6 +110,7 @@ class UserStore {
       this.setUser(result.user);
     } catch (error) {
       this.handleAuthError(error as AuthError);
+      throw error;
     } finally {
       this.isLoading = false;
     }

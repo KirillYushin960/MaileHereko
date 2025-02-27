@@ -1,3 +1,4 @@
+import { useMediaQuery, useTheme } from '@mui/material';
 import { RefObject, useEffect } from 'react';
 
 export const useIntersectionObserver = (
@@ -23,4 +24,15 @@ export const useIntersectionObserver = (
       }
     };
   }, [callback, targetRef]);
+};
+
+export const useDevice = () => {
+  const theme = useTheme();
+
+  return {
+    isMobile: useMediaQuery(theme.breakpoints.down('sm')),
+    isTablet: useMediaQuery(theme.breakpoints.between('sm', 'md')),
+    isLaptop: useMediaQuery(theme.breakpoints.between('md', 'lg')),
+    isDesktop: useMediaQuery(theme.breakpoints.up('lg')),
+  };
 };
