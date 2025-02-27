@@ -11,7 +11,7 @@ interface IProtectedRoute {
 }
 
 export const ProtectedRoute = observer(({ children, guestOnly = false }: IProtectedRoute) => {
-  const { user, isLoading, setSighIn } = userStore;
+  const { user, isLoading } = userStore;
 
   if (isLoading)
     return (
@@ -25,7 +25,6 @@ export const ProtectedRoute = observer(({ children, guestOnly = false }: IProtec
   }
 
   if (!user?.uid && !guestOnly) {
-    setSighIn();
     return <Navigate to="/login" replace />;
   }
 
