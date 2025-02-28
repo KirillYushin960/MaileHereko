@@ -1,59 +1,17 @@
 /* eslint-disable no-console */
-import { Box, IconButton, Typography } from '@mui/material';
-import { style } from './style';
-import { Button } from '@components/Button';
-import { projectName } from '@constants';
-import IconGoogle from '@assets/icons/google.svg';
-import { userStore } from '@store/UserStore';
-import { observer } from 'mobx-react-lite';
-import { SubmitHandler, useForm } from 'react-hook-form';
-import { useState, useEffect, KeyboardEvent } from 'react';
-import { zodResolver } from '@hookform/resolvers/zod';
-import RevealedPassword from '@assets/icons/eye.svg';
-import HiddenPassword from '@assets/icons/eye-slash.svg';
-import { LoginForm } from '@types';
+import { AuthForm } from '@components/AuthForm';
 import { loginSchema } from '@schemas';
+import { userStore } from '@store/UserStore';
+import { FormField, LoginForm } from '@types';
+import { useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { FormInput } from '@components/FormInput';
 
 const Login = () => {
   const navigate = useNavigate();
 
-  const {
-    loginWithEmail,
-    loginWithGoogle,
-    authError,
-    clearAuthError,
-    lastVisitedPage,
-    clearLastVisitedPage,
-  } = userStore;
+  const { loginWithEmail, lastVisitedPage, clearLastVisitedPage } = userStore;
 
-  const {
-    control,
-    handleSubmit,
-    formState: { errors, isSubmitting },
-    setError,
-    clearErrors,
-  } = useForm<LoginForm>({
-    resolver: zodResolver(loginSchema),
-    mode: 'onBlur',
-    reValidateMode: 'onSubmit',
-    defaultValues: {
-      email: '',
-      password: '',
-    },
-  });
-
-  const [showPassword, setShowPassword] = useState(false);
-
-  useEffect(() => {
-    if (authError) {
-      setError('root', { message: authError.message });
-      clearAuthError();
-    }
-  }, [authError, setError, clearAuthError]);
-
-  const onSubmit: SubmitHandler<LoginForm> = async (data) => {
+  const handleSubmit = async (data: LoginForm) => {
     try {
       await loginWithEmail(data.email, data.password);
       navigate(lastVisitedPage || '/');
@@ -63,82 +21,26 @@ const Login = () => {
     }
   };
 
-  const handleGoogleLogin = async () => {
-    try {
-      await loginWithGoogle();
-      navigate(lastVisitedPage || '/');
-      clearLastVisitedPage();
-    } catch (error) {
-      console.error('Authentication error:', error);
-    }
-  };
-
-  const handleKeyDown = (e: KeyboardEvent<HTMLDivElement>) => {
-    if (e.key === 'Enter') {
-      handleSubmit(onSubmit)();
-    }
-  };
+  // вынести в консту
+  const fields = useMemo<FormField<LoginForm>[]>(
+    () => [
+      { name: 'email', label: 'Email', type: 'text' },
+      { name: 'password', label: 'Password', type: 'password' },
+    ],
+    []
+  );
 
   return (
-    <Box sx={style.container} onKeyDown={handleKeyDown}>
-      <Typography variant="h4" sx={style.header}>
-        Sign in to {projectName}
-      </Typography>
-
-      <Box sx={style.inputContainer}>
-        <FormInput
-          control={control}
-          label="Email"
-          name="email"
-          error={errors.email}
-          helperText={errors.email?.message}
-          clearErrors={clearErrors}
-        />
-
-        <FormInput
-          control={control}
-          name="password"
-          label="Password"
-          type={showPassword ? 'text' : 'password'}
-          error={errors.password}
-          clearErrors={clearErrors}
-          helperText={errors.password?.message}
-          endIcon={showPassword ? HiddenPassword : RevealedPassword}
-          onEndIconClick={() => setShowPassword((prev) => !prev)}
-        />
-
-        {errors.root && (
-          <Typography variant="body2" color="error" sx={style.rootError}>
-            {errors.root.message}
-          </Typography>
-        )}
-      </Box>
-
-      <Button onClick={handleSubmit(onSubmit)} disabled={isSubmitting}>
-        Sign in
-      </Button>
-
-      <Box sx={style.authModeContainer}>
-        <Box sx={style.authModeSwitch}>
-          <Typography variant="bodyRegular" sx={style.text}>
-            New to {projectName}?
-          </Typography>
-
-          <Typography
-            variant="bodyRegular"
-            sx={style.interactionText}
-            onClick={() => navigate('/registration')}
-          >
-            Create an account
-          </Typography>
-        </Box>
-
-        <IconButton sx={style.logoButton} onClick={handleGoogleLogin} disabled={isSubmitting}>
-          <Box component="img" src={IconGoogle} alt="Google login" draggable="false" />
-        </IconButton>
-      </Box>
-    </Box>
+    <AuthForm<LoginForm>
+      title="Sign in to"
+      fields={fields}
+      submitButtonText="Sign in"
+      alternateActionText="New to our platform?"
+      alternateActionLink="/registration"
+      onSubmit={handleSubmit}
+      validationSchema={loginSchema}
+    />
   );
 };
 
-export default observer(Login);
+export default Login;

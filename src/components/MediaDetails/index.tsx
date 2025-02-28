@@ -4,7 +4,7 @@ import { GetSingleMediaQuery } from '@generated/types';
 import { handleDateFormat, areDatesEqual, parseMediaStatus, parseDescription } from '@helpers';
 import { MediaInfo } from '@ui/MediaInfo';
 import { Rating } from '@ui/Rating';
-import { Box, Skeleton, Typography } from '@mui/material';
+import { Box, CircularProgress, Skeleton, Typography } from '@mui/material';
 import { style } from './style';
 import { useEffect, useState } from 'react';
 import { charLimit } from '@constants';
@@ -23,6 +23,8 @@ import {
 } from 'firebase/firestore';
 import { observer } from 'mobx-react-lite';
 import { AuthDialog } from '@components/AuthDialog';
+import { CommentItem } from '@types';
+import { Comment } from '@components/Comment';
 
 interface IMediaDetails {
   data: GetSingleMediaQuery['Media'];
@@ -52,6 +54,10 @@ export const MediaDetails = observer(({ data }: IMediaDetails) => {
   const [isSubscribing, setIsSubscribing] = useState(false);
   const [isFetchingFavorite, setIsFetchingFavorite] = useState(false);
   const [isDialogOpen, setDialogOpen] = useState(false);
+  const [showAllEpisodes, setShowAllEpisodes] = useState(false);
+
+  const [comments, setComments] = useState<CommentItem[] | null>(null);
+  const [isFetchingComments, setFetchingComments] = useState(false);
 
   const datesEqual = startDate && endDate ? areDatesEqual({ startDate, endDate }) : false;
 
@@ -84,6 +90,32 @@ export const MediaDetails = observer(({ data }: IMediaDetails) => {
       console.error('Error fetchFavorite:', err);
     } finally {
       setIsFetchingFavorite(false);
+    }
+  };
+
+  const fetchComments = async () => {
+    try {
+      setFetchingComments(true);
+
+      const commentRef = collection(db, 'comments');
+      const dbQuery = query(commentRef, where('mediaId', '==', id));
+      const querySnapshot = await getDocs(dbQuery);
+
+      const comments: CommentItem[] = querySnapshot.docs.map((doc) => ({
+        authorId: doc.data().authorId,
+        authorImage: doc.data().authorImage,
+        authorName: doc.data().authorName,
+        createdAt: doc.data().createdAt,
+        likes: doc.data().likes,
+        mediaId: doc.data().mediaId,
+        text: doc.data().text,
+      }));
+
+      setComments(comments);
+    } catch (err) {
+      console.error('Error fetchComments:', err);
+    } finally {
+      setFetchingComments(false);
     }
   };
 
@@ -150,6 +182,7 @@ export const MediaDetails = observer(({ data }: IMediaDetails) => {
 
   useEffect(() => {
     fetchFavorite();
+    fetchComments();
 
     if (!user) {
       setIsSubscribed(null);
@@ -261,12 +294,32 @@ export const MediaDetails = observer(({ data }: IMediaDetails) => {
             </Typography>
 
             <Box sx={style.episodesList}>
-              {streamingEpisodes.map((episode, i) => (
-                <EpisodeItem key={i} episode={episode} />
-              ))}
+              {(showAllEpisodes ? streamingEpisodes : streamingEpisodes.slice(0, 6)).map(
+                (episode, i) => (
+                  <EpisodeItem key={i} episode={episode} />
+                )
+              )}
             </Box>
+
+            {!showAllEpisodes && streamingEpisodes.length > 6 && (
+              <Button sxStyle={style.showMoreEpisodes} onClick={() => setShowAllEpisodes(true)}>
+                Show all episodes
+              </Button>
+            )}
           </Box>
         )}
+
+        <Typography variant="bodyRegular" sx={{ ...style.episodesHeader }}>
+          Comments
+        </Typography>
+
+        {isFetchingComments && (
+          <CircularProgress sx={{ display: 'flex', justifySelf: 'center', mt: 4 }} />
+        )}
+
+        <Box sx={{ display: 'flex', flexDirection: 'column', gap: '24px', mt: '8px' }}>
+          {comments?.map((comment, i) => <Comment key={i} comment={comment} />)}
+        </Box>
 
         <AuthDialog isOpen={isDialogOpen} handleClose={() => setDialogOpen(false)} />
       </Box>

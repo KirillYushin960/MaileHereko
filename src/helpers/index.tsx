@@ -58,3 +58,27 @@ export const parseDescription = (description: string) =>
       .replace(/\(Source.*$/s, '')
       .replace(/<b>\*.*$/s, '')
   );
+
+// dayjs попробовать
+export const getFormattedDate = (seconds: number) => {
+  const date = new Date(seconds * 1000);
+  const now = new Date();
+  const diffInSeconds = Math.floor((now.getTime() - date.getTime()) / 1000);
+
+  if (diffInSeconds < 60) return 'just now';
+
+  const minutes = Math.floor(diffInSeconds / 60);
+  if (minutes < 60) return `${minutes} minute${minutes === 1 ? '' : 's'} ago`;
+
+  const hours = Math.floor(diffInSeconds / 3600);
+  if (hours < 24) return `${hours} hour${hours === 1 ? '' : 's'} ago`;
+
+  return date.toLocaleString('en-US', {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: false,
+  });
+};

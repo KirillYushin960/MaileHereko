@@ -1,5 +1,9 @@
+import { zodResolver } from '@hookform/resolvers/zod';
 import { useMediaQuery, useTheme } from '@mui/material';
+import { userStore } from '@store/UserStore';
 import { RefObject, useEffect } from 'react';
+import { FieldValues, useForm, UseFormReturn } from 'react-hook-form';
+import { ZodSchema, ZodTypeDef } from 'zod';
 
 export const useIntersectionObserver = (
   targetRef: RefObject<HTMLDivElement | null>,
@@ -35,4 +39,23 @@ export const useDevice = () => {
     isLaptop: useMediaQuery(theme.breakpoints.between('md', 'lg')),
     isDesktop: useMediaQuery(theme.breakpoints.up('lg')),
   };
+};
+
+export const useAuthForm = <T extends FieldValues>(
+  validationSchema: ZodSchema<T, ZodTypeDef, Partial<T>>
+): UseFormReturn<T> => {
+  const form = useForm<T>({
+    resolver: zodResolver(validationSchema),
+    mode: 'onBlur',
+    reValidateMode: 'onSubmit',
+  });
+
+  useEffect(() => {
+    if (userStore.authError) {
+      form.setError('root', { message: userStore.authError.message });
+      userStore.clearAuthError();
+    }
+  }, [userStore.authError, form]);
+
+  return form;
 };

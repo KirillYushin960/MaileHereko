@@ -1,7 +1,7 @@
 import { content } from '@constants';
 import { loginSchema, registerSchema } from '@schemas';
 import { z } from 'zod';
-import { FieldError } from 'react-hook-form';
+import { FieldError, FieldValues, Path } from 'react-hook-form';
 
 export type OpacityColors = {
   100: string;
@@ -33,3 +33,31 @@ export type MenuItem = {
 export type FormErrors<T> = {
   [K in keyof T]?: FieldError;
 } & { root?: { message: string } };
+
+export type FormField<T extends FieldValues> = {
+  name: Path<T>;
+  label: string;
+  type: 'text' | 'password';
+};
+
+export type FavoriteItem = {
+  mediaId: string;
+  title: string;
+  image: string;
+  rating: number;
+};
+
+type createdAtType = {
+  seconds: number;
+  nanoseconds: number;
+};
+
+export type CommentItem = {
+  authorId: string;
+  authorImage: string;
+  authorName: string;
+  createdAt: createdAtType;
+  likes: number;
+  mediaId: number;
+  text: string;
+};

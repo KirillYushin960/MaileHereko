@@ -1,19 +1,26 @@
-import { Control, Controller, FieldValues, Path, UseFormClearErrors } from 'react-hook-form';
+import {
+  Control,
+  Controller,
+  FieldValues,
+  Path,
+  UseFormClearErrors,
+  FieldError,
+} from 'react-hook-form';
 import { Input } from '@components/Input';
-import { FormErrors } from '@types';
+import { style } from './style';
 
-type FormInputProps<T extends FieldValues> = {
+interface IFormInput<T extends FieldValues> {
   control: Control<T>;
   name: Path<T>;
   label: string;
   type?: string;
-  error?: FormErrors<T>[Path<T>];
+  error?: FieldError;
   helperText?: string;
   endIcon?: string;
   onEndIconClick?: () => void;
   onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
   clearErrors: UseFormClearErrors<T>;
-};
+}
 
 export const FormInput = <T extends FieldValues>({
   control,
@@ -26,7 +33,7 @@ export const FormInput = <T extends FieldValues>({
   onEndIconClick,
   onChange,
   clearErrors,
-}: FormInputProps<T>) => (
+}: IFormInput<T>) => (
   <Controller
     name={name}
     control={control}
@@ -39,6 +46,7 @@ export const FormInput = <T extends FieldValues>({
         helperText={error?.message || helperText}
         endIcon={endIcon}
         endIconClick={onEndIconClick}
+        endIconStyle={style.endIcon}
         onChange={(e) => {
           field.onChange(e);
           clearErrors(name);

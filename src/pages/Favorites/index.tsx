@@ -6,13 +6,7 @@ import { collection, getDocs, orderBy, query, where } from 'firebase/firestore';
 import { userStore } from '@store/UserStore';
 import { Card } from '@components/Card';
 import NoFavoritesImage from '@assets/no-results.png';
-
-interface FavoriteItem {
-  mediaId: string;
-  title: string;
-  image: string;
-  rating: number;
-}
+import { FavoriteItem } from '@types';
 
 const Favorites = () => {
   const { user } = userStore;

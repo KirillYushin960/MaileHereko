@@ -15,6 +15,7 @@ interface StyleProps {
   infoSection: SxProps<Theme>;
   subscribeButton: SxProps<Theme>;
   subscribeButtonSkeleton: SxProps<Theme>;
+  showMoreEpisodes: SxProps<Theme>;
 }
 
 export const style: StyleProps = {
@@ -86,11 +87,21 @@ export const style: StyleProps = {
 
   episodesHeader: {
     color: theme.palette.customGray[400],
+    display: 'block',
   },
 
   episodesList: {
     display: 'grid',
     gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
     gap: '16px',
+    mb: '32px',
+  },
+
+  showMoreEpisodes: {
+    width: '200px',
+    alignSelf: 'center',
+    height: '32px',
+    mb: '32px',
+    mt: '-16px',
   },
 };
