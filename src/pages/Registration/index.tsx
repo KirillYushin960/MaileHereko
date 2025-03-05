@@ -4,7 +4,15 @@ import { useNavigate } from 'react-router-dom';
 import { userStore } from '@store/UserStore';
 import { FormField, RegisterForm } from '@types';
 import { registerSchema } from '@schemas';
-import { useMemo } from 'react';
+
+// вынести в консту
+const fields: FormField<RegisterForm>[] = [
+  { name: 'firstName', label: 'First Name', type: 'text' },
+  { name: 'lastName', label: 'Last Name', type: 'text' },
+  { name: 'email', label: 'Email', type: 'text' },
+  { name: 'password', label: 'Password', type: 'password' },
+  { name: 'confirmPassword', label: 'Confirm Password', type: 'password' },
+];
 
 const Registration = () => {
   const navigate = useNavigate();
@@ -20,18 +28,6 @@ const Registration = () => {
       console.error('Authentication error:', error);
     }
   };
-
-  // вынести в консту
-  const fields = useMemo<FormField<RegisterForm>[]>(
-    () => [
-      { name: 'firstName', label: 'First Name', type: 'text' },
-      { name: 'lastName', label: 'Last Name', type: 'text' },
-      { name: 'email', label: 'Email', type: 'text' },
-      { name: 'password', label: 'Password', type: 'password' },
-      { name: 'confirmPassword', label: 'Confirm Password', type: 'password' },
-    ],
-    []
-  );
 
   return (
     <AuthForm

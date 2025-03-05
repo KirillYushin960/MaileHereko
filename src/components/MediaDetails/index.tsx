@@ -6,8 +6,8 @@ import { MediaInfo } from '@ui/MediaInfo';
 import { Rating } from '@ui/Rating';
 import { Box, CircularProgress, Skeleton, Typography } from '@mui/material';
 import { style } from './style';
-import { useEffect, useState } from 'react';
-import { charLimit } from '@constants';
+import { ChangeEvent, useEffect, useState } from 'react';
+import { mediaDescriptionCharLimit } from '@constants';
 import { Button } from '@components/Button';
 import { userStore } from '@store/UserStore';
 import { db } from '@config/firebase';
@@ -20,11 +20,14 @@ import {
   where,
   getDocs,
   deleteDoc,
+  orderBy,
 } from 'firebase/firestore';
 import { observer } from 'mobx-react-lite';
 import { AuthDialog } from '@components/AuthDialog';
 import { CommentItem } from '@types';
 import { Comment } from '@components/Comment';
+import { Textarea } from '@components/Textarea';
+import { Element, Text, Descendant } from 'slate';
 
 interface IMediaDetails {
   data: GetSingleMediaQuery['Media'];
@@ -64,7 +67,7 @@ export const MediaDetails = observer(({ data }: IMediaDetails) => {
   const [isDescriptionExpanded, setIsDescriptionExpanded] = useState(false);
 
   const parsedDescription = parseDescription(description ?? '');
-  const isTruncated = parsedDescription.toString().length > charLimit;
+  const isTruncated = parsedDescription.toString().length > mediaDescriptionCharLimit;
 
   // config/quires/index.ts
   const fetchFavorite = async () => {
@@ -98,17 +101,20 @@ export const MediaDetails = observer(({ data }: IMediaDetails) => {
       setFetchingComments(true);
 
       const commentRef = collection(db, 'comments');
-      const dbQuery = query(commentRef, where('mediaId', '==', id));
+
+      const dbQuery = query(commentRef, where('mediaId', '==', id), orderBy('createdAt', 'desc'));
+
       const querySnapshot = await getDocs(dbQuery);
 
       const comments: CommentItem[] = querySnapshot.docs.map((doc) => ({
+        commentId: doc.id,
         authorId: doc.data().authorId,
         authorImage: doc.data().authorImage,
         authorName: doc.data().authorName,
         createdAt: doc.data().createdAt,
-        likes: doc.data().likes,
         mediaId: doc.data().mediaId,
         text: doc.data().text,
+        liked: doc.data().liked,
       }));
 
       setComments(comments);
@@ -182,7 +188,10 @@ export const MediaDetails = observer(({ data }: IMediaDetails) => {
 
   useEffect(() => {
     fetchFavorite();
-    fetchComments();
+
+    if (!comments) {
+      fetchComments();
+    }
 
     if (!user) {
       setIsSubscribed(null);
@@ -191,6 +200,65 @@ export const MediaDetails = observer(({ data }: IMediaDetails) => {
 
   const favoriteButtonText =
     isSubscribed === false || isSubscribed === null ? 'Add to favorites' : 'Remove from favorites';
+
+  const [inputValue, setInputValue] = useState('');
+
+  const parseSlateContent = (content: string | Descendant[]): Descendant[] => {
+    if (typeof content === 'string') {
+      try {
+        return JSON.parse(content);
+      } catch {
+        return [{ type: 'paragraph', children: [{ text: 'Parsing error' }] }];
+      }
+    }
+    return content;
+  };
+
+  const isContentEmpty = (content: Descendant[]): boolean => {
+    return content.every((node) => {
+      if (Text.isText(node)) {
+        return node.text.trim() === '';
+      }
+
+      if (Element.isElement(node)) {
+        return isContentEmpty(node.children);
+      }
+
+      return true;
+    });
+  };
+
+  const handleCommentSubmit = async () => {
+    if (!user || !id) {
+      setDialogOpen(true);
+      return;
+    }
+
+    const parsedContent = parseSlateContent(inputValue);
+
+    if (isContentEmpty(parsedContent)) {
+      console.error('Field is empty');
+      return;
+    }
+
+    try {
+      const commentRef = collection(db, 'comments');
+      await addDoc(commentRef, {
+        authorId: user.uid,
+        authorImage: user.photoURL || '',
+        authorName: user.displayName || 'Anonymous',
+        createdAt: Timestamp.now(),
+        liked: [],
+        mediaId: id,
+        text: inputValue,
+      });
+
+      setInputValue('');
+      fetchComments();
+    } catch (err) {
+      console.error('Error handleCommentSubmit:', err);
+    }
+  };
 
   return (
     <>
@@ -206,7 +274,7 @@ export const MediaDetails = observer(({ data }: IMediaDetails) => {
                 parsedDescription
               ) : (
                 <>
-                  {parsedDescription.toString().slice(0, 200)}...
+                  {parsedDescription.toString().slice(0, mediaDescriptionCharLimit - 100)}...
                   <Box
                     component="span"
                     onClick={() => setIsDescriptionExpanded(true)}
@@ -289,7 +357,7 @@ export const MediaDetails = observer(({ data }: IMediaDetails) => {
 
         {streamingEpisodes && streamingEpisodes?.length > 0 && (
           <Box sx={style.episodesContainer}>
-            <Typography variant="bodyRegular" sx={style.episodesHeader}>
+            <Typography variant="bodyRegular" sx={style.sectionHeader}>
               Streaming Episodes
             </Typography>
 
@@ -309,16 +377,40 @@ export const MediaDetails = observer(({ data }: IMediaDetails) => {
           </Box>
         )}
 
-        <Typography variant="bodyRegular" sx={{ ...style.episodesHeader }}>
+        <Typography variant="bodyRegular" sx={style.sectionHeader}>
           Comments
         </Typography>
 
-        {isFetchingComments && (
-          <CircularProgress sx={{ display: 'flex', justifySelf: 'center', mt: 4 }} />
-        )}
+        <Textarea
+          label="Write something..."
+          value={inputValue}
+          onChange={(e: ChangeEvent<HTMLInputElement>) => {
+            console.log(inputValue);
+            setInputValue(e.target.value);
+          }}
+          buttonClick={handleCommentSubmit}
+        />
+
+        {isFetchingComments && <CircularProgress sx={{ display: 'block', m: '20px auto' }} />}
 
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: '24px', mt: '8px' }}>
-          {comments?.map((comment, i) => <Comment key={i} comment={comment} />)}
+          {comments?.length === 0 && (
+            <Typography
+              sx={{
+                color: 'white',
+                my: '12px',
+                textAlign: 'center',
+                typography: { xs: 'bodyRegular', sm: 'bodyLarge' },
+              }}
+            >
+              There&nbsp;are&nbsp;no&nbsp;comments&nbsp;yet.
+              Be&nbsp;the&nbsp;first&nbsp;to&nbsp;leave&nbsp;a&nbsp;comment!
+            </Typography>
+          )}
+
+          {comments?.map((comment) => (
+            <Comment key={comment.commentId} comment={comment} setDialogOpen={setDialogOpen} />
+          ))}
         </Box>
 
         <AuthDialog isOpen={isDialogOpen} handleClose={() => setDialogOpen(false)} />

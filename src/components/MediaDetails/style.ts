@@ -7,7 +7,7 @@ interface StyleProps {
   description: SxProps<Theme>;
   rating: SxProps<Theme>;
   episodesContainer: SxProps<Theme>;
-  episodesHeader: SxProps<Theme>;
+  sectionHeader: SxProps<Theme>;
   episodesList: SxProps<Theme>;
   showMore: SxProps<Theme>;
   ratingContainer: SxProps<Theme>;
@@ -85,7 +85,7 @@ export const style: StyleProps = {
 
   episodesContainer: { display: 'flex', flexDirection: 'column', gap: '8px', clear: 'both' },
 
-  episodesHeader: {
+  sectionHeader: {
     color: theme.palette.customGray[400],
     display: 'block',
   },

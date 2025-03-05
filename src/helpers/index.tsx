@@ -1,5 +1,7 @@
 import { CardPlaceholder } from '@components/CardPlaceholder';
 import { GetMediaQuery, GetSingleMediaQuery } from '@generated/types';
+import relativeTime from 'dayjs/plugin/relativeTime';
+import dayjs from 'dayjs';
 import parse from 'html-react-parser';
 
 type PageData = GetMediaQuery['Page'];
@@ -59,26 +61,26 @@ export const parseDescription = (description: string) =>
       .replace(/<b>\*.*$/s, '')
   );
 
-// dayjs попробовать
-export const getFormattedDate = (seconds: number) => {
-  const date = new Date(seconds * 1000);
-  const now = new Date();
-  const diffInSeconds = Math.floor((now.getTime() - date.getTime()) / 1000);
+dayjs.extend(relativeTime);
 
-  if (diffInSeconds < 60) return 'just now';
+export const getFormattedDate = (seconds: number): string => {
+  const date = dayjs.unix(seconds);
+  const now = dayjs();
 
-  const minutes = Math.floor(diffInSeconds / 60);
-  if (minutes < 60) return `${minutes} minute${minutes === 1 ? '' : 's'} ago`;
+  if (now.diff(date, 'second') < 60) return 'just now';
+  if (now.diff(date, 'day') < 1) return date.fromNow();
 
-  const hours = Math.floor(diffInSeconds / 3600);
-  if (hours < 24) return `${hours} hour${hours === 1 ? '' : 's'} ago`;
+  return date.format('MMM D, YYYY HH:mm');
+};
 
-  return date.toLocaleString('en-US', {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit',
-    hour12: false,
-  });
+export const formatLikes = (count: number) => {
+  if (count >= 1000000) {
+    return (count / 1000000).toFixed(1) + 'M';
+  }
+
+  if (count >= 1000) {
+    return (count / 1000).toFixed(1) + 'K';
+  }
+
+  return count.toString();
 };

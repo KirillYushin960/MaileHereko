@@ -13,7 +13,9 @@ export const navItems: MenuItem[] = [
 
 export const cardPerPage = 20;
 
-export const charLimit = 300;
+export const mediaDescriptionCharLimit = 300;
+
+export const mediaCommentCharLimit = 500;
 
 export const filterInitialState = {
   inputValue: '',

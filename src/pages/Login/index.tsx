@@ -3,12 +3,16 @@ import { AuthForm } from '@components/AuthForm';
 import { loginSchema } from '@schemas';
 import { userStore } from '@store/UserStore';
 import { FormField, LoginForm } from '@types';
-import { useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
+
+// вынести в консту
+const fields: FormField<LoginForm>[] = [
+  { name: 'email', label: 'Email', type: 'text' },
+  { name: 'password', label: 'Password', type: 'password' },
+];
 
 const Login = () => {
   const navigate = useNavigate();
-
   const { loginWithEmail, lastVisitedPage, clearLastVisitedPage } = userStore;
 
   const handleSubmit = async (data: LoginForm) => {
@@ -20,15 +24,6 @@ const Login = () => {
       console.error('Authentication error:', error);
     }
   };
-
-  // вынести в консту
-  const fields = useMemo<FormField<LoginForm>[]>(
-    () => [
-      { name: 'email', label: 'Email', type: 'text' },
-      { name: 'password', label: 'Password', type: 'password' },
-    ],
-    []
-  );
 
   return (
     <AuthForm<LoginForm>

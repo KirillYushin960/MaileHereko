@@ -53,11 +53,12 @@ type createdAtType = {
 };
 
 export type CommentItem = {
+  commentId: string;
   authorId: string;
   authorImage: string;
   authorName: string;
   createdAt: createdAtType;
-  likes: number;
+  liked: string[];
   mediaId: number;
   text: string;
 };
