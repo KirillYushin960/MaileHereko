@@ -1,11 +1,24 @@
 import { ColorPartial } from '@mui/material/styles/createPalette';
-import { OpacityColors } from '@types';
+import { MenuItem, OpacityColors } from '@types';
 
 export const projectName = 'MaileHereko';
 
-export const animeFilterInitialState = {
-  page: 1,
-  input: '',
+export const content = ['All', 'Anime', 'Manga'] as const;
+
+export const navItems: MenuItem[] = [
+  { path: '/anime', label: 'Anime' },
+  { path: '/manga', label: 'Manga' },
+  { path: '/favorites', label: 'Favorites', requiresAuth: true },
+];
+
+export const cardPerPage = 20;
+
+export const mediaDescriptionCharLimit = 300;
+
+export const mediaCommentCharLimit = 500;
+
+export const filterInitialState = {
+  inputValue: '',
 };
 
 export const customPrimary: ColorPartial = {

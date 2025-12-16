@@ -1,5 +1,5 @@
 import { MouseEventHandler, ReactNode } from 'react';
-import { Button as MUIButton, SxProps, Theme, Typography } from '@mui/material';
+import { Box, Button as MUIButton, SxProps, Theme, Typography } from '@mui/material';
 import { style } from './style';
 
 interface IButton {
@@ -18,8 +18,10 @@ export const Button = ({ startIcon, endIcon, sxStyle, disabled, onClick, childre
     disabled={disabled}
     onClick={onClick}
     sx={() => ({ ...style.button, ...sxStyle })}
-    startIcon={startIcon && <img src={startIcon} draggable="false" alt="start icon" />}
-    endIcon={endIcon && <img src={endIcon} draggable="false" alt="end icon" />}
+    startIcon={
+      startIcon && <Box component="img" src={startIcon} draggable="false" alt="start icon" />
+    }
+    endIcon={endIcon && <Box component="img" src={endIcon} draggable="false" alt="end icon" />}
   >
     <Typography variant="bodyRegular" sx={style.text}>
       {children}

@@ -4,10 +4,9 @@ import { theme } from '@theme';
 interface StyleProps {
   appBar: SxProps<Theme>;
   toolbar: SxProps<Theme>;
-  linkContainer: SxProps<Theme>;
-  link: SxProps<Theme>;
+  logoButton: SxProps<Theme>;
   menuButton: SxProps<Theme>;
-  menu: SxProps<Theme>;
+  linkContainer: SxProps<Theme>;
 }
 
 export const style: StyleProps = {
@@ -26,22 +25,11 @@ export const style: StyleProps = {
     height: '80px',
   },
 
-  linkContainer: { display: 'flex', gap: '16px' },
+  logoButton: { p: '12px' },
 
-  link: {
-    color: theme.palette.customGray[200],
-    px: '16px',
-    py: '12px',
-  },
+  linkContainer: { display: 'flex', gap: '16px' },
 
   menuButton: {
     color: theme.palette.customGray[200],
-  },
-
-  menu: {
-    backgroundColor: theme.palette.customGray[900],
-    width: '240px',
-    pt: '16px',
-    textAlign: 'center',
   },
 };

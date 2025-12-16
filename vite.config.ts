@@ -18,6 +18,10 @@ export default defineConfig({
       '@pages': path.resolve(__dirname, 'src/pages'),
       '@layout': path.resolve(__dirname, 'src/layout'),
       '@generated': path.resolve(__dirname, 'src/__generated__'),
+      '@hooks': path.resolve(__dirname, './src/hooks'),
+      '@helpers': path.resolve(__dirname, './src/helpers'),
+      '@config': path.resolve(__dirname, './src/config'),
+      '@schemas': path.resolve(__dirname, './src/schemas'),
     },
   },
 });

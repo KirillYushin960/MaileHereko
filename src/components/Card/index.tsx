@@ -1,3 +1,5 @@
+import { RefObject } from 'react';
+import { Link } from 'react-router-dom';
 import {
   Box,
   Card as MuiCard,
@@ -8,36 +10,32 @@ import {
 } from '@mui/material';
 import { style } from './style';
 import ImagePlaceholder from '@assets/Image-placeholder.png';
-import IconStar from '@assets/icons/star.svg';
+import { Rating } from '@ui/Rating';
 
 interface ICard {
-  title: string | null | undefined;
-  rating: number | null | undefined;
-  image: string | null | undefined;
+  title: string;
+  id?: number | string;
+  ref?: RefObject<HTMLDivElement | null> | null;
+  rating?: number | null;
+  image?: string | null;
 }
 
-export const Card = ({ rating, image, title }: ICard) => (
-  <MuiCard sx={style.card}>
-    {rating && (
-      <Box sx={style.ratingContainer}>
-        <img src={IconStar} draggable="false" alt="star" style={{ height: '16px' }} />
+export const Card = ({ id, rating, image, title, ref }: ICard) => (
+  <Box component={Link} to={`/media/${id}`} sx={style.container}>
+    <MuiCard sx={style.card} ref={ref}>
+      {rating && rating > 0 && <Rating number={rating} sxStyle={style.rating} />}
 
-        <Typography variant="bodyRegular" sx={style.rating}>
-          {rating / 10}
-        </Typography>
-      </Box>
-    )}
+      <Box sx={style.backgroundOverlay(image, ImagePlaceholder)} />
 
-    <Box sx={style.backgroundOverlay(image, ImagePlaceholder)} />
+      <CardActionArea>
+        <CardMedia component="img" image={image || ImagePlaceholder} alt="img" sx={style.media} />
 
-    <CardActionArea>
-      <CardMedia component="img" image={image || ImagePlaceholder} alt="img" sx={style.cardMedia} />
-
-      <CardContent sx={style.cardContent}>
-        <Typography variant="linkRegular" sx={style.cardTitle}>
-          {title}
-        </Typography>
-      </CardContent>
-    </CardActionArea>
-  </MuiCard>
+        <CardContent sx={style.content}>
+          <Typography variant="linkRegular" sx={style.title}>
+            {title}
+          </Typography>
+        </CardContent>
+      </CardActionArea>
+    </MuiCard>
+  </Box>
 );

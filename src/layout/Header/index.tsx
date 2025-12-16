@@ -1,79 +1,72 @@
 import { useState } from 'react';
+import { observer } from 'mobx-react-lite';
 import { Link } from 'react-router-dom';
-import {
-  AppBar,
-  Box,
-  Button,
-  Drawer,
-  IconButton,
-  Toolbar,
-  Typography,
-  useMediaQuery,
-} from '@mui/material';
+import { AppBar, Box, IconButton, Toolbar } from '@mui/material';
+import { userStore } from '@store/UserStore';
+import { LogoutDialog } from '@components/LogoutDialog';
+import { useDevice } from '@hooks';
+import { UserMenu } from '@components/UserMenu';
+import { NavLinks } from '@components/NavLinks';
+import { MobileMenu } from '@components/MobileMenu';
 import { style } from './style';
 import MenuIcon from '@mui/icons-material/Menu';
-import ArrowRight from '@assets/icons/arrow-right.svg';
 import Logo from '@assets/logo.svg';
 
-export const Header = () => {
-  const [drawerOpen, setDrawerOpen] = useState(false);
-  const isMobile = useMediaQuery('(max-width:600px)');
+export const Header = observer(() => {
+  const [isDialogOpen, setDialogOpen] = useState(false);
+  const [isDrawerOpen, setDrawerOpen] = useState(false);
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 
-  const handleDrawerToggle = (open: boolean) => {
-    setDrawerOpen(open);
+  const { isMobile } = useDevice();
+
+  const { user } = userStore;
+
+  const handleDialogClose = () => {
+    setDialogOpen(false);
+    setDrawerOpen(false);
+    setAnchorEl(null);
   };
-
-  const links = (
-    <>
-      <Button sx={style.link} component={Link} to="/" onClick={() => handleDrawerToggle(false)}>
-        <Typography variant="linkRegular">Anime</Typography>
-      </Button>
-
-      <Button sx={style.link} component={Link} to="/" onClick={() => handleDrawerToggle(false)}>
-        <Typography variant="linkRegular">Manga</Typography>
-      </Button>
-
-      <Button
-        sx={style.link}
-        component={Link}
-        to="/"
-        endIcon={<img src={ArrowRight} alt="Arrow Right" draggable="false" />}
-        onClick={() => handleDrawerToggle(false)}
-      >
-        <Typography variant="linkRegular">Suggest me</Typography>
-      </Button>
-    </>
-  );
 
   return (
     <AppBar position="fixed" sx={style.appBar}>
       <Toolbar sx={style.toolbar}>
-        <img src={Logo} alt="Logo" draggable="false" />
+        <IconButton component={Link} to="/" sx={style.logoButton}>
+          <Box component="img" src={Logo} alt="Logo" draggable="false" />
+        </IconButton>
 
         {isMobile ? (
           <>
             <IconButton
               edge="start"
               aria-label="menu"
-              onClick={() => handleDrawerToggle(true)}
+              onClick={() => setDrawerOpen(true)}
               sx={style.menuButton}
             >
               <MenuIcon />
             </IconButton>
 
-            <Drawer
-              anchor="right"
-              open={drawerOpen}
-              onClose={() => handleDrawerToggle(false)}
-              PaperProps={{ sx: { ...style.menu } }}
-            >
-              {links}
-            </Drawer>
+            <MobileMenu
+              open={isDrawerOpen}
+              onClose={() => setDrawerOpen(false)}
+              setDialogOpen={setDialogOpen}
+            />
           </>
         ) : (
-          <Box sx={style.linkContainer}>{links}</Box>
+          <Box sx={style.linkContainer}>
+            <NavLinks isMobile={false} onClose={() => setDrawerOpen(false)} />
+
+            {user && (
+              <UserMenu
+                handleDialogOpen={() => setDialogOpen(true)}
+                anchorEl={anchorEl}
+                setAnchorEl={setAnchorEl}
+              />
+            )}
+          </Box>
         )}
       </Toolbar>
+
+      <LogoutDialog isOpen={isDialogOpen} handleClose={handleDialogClose} />
     </AppBar>
   );
-};
+});
